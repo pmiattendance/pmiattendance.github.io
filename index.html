@@ -1173,7 +1173,7 @@ ${present.join('\n')||'• None'}
 ❌ Absent (${absent.length})
 ${absent.join('\n')||'• None'}
 Total: ${results.length} students
-⚠️ Note: Attendance not saved to cloud`;
+
 document.getElementById('waPreview').textContent = msg;
 // ✅ FIXED: Removed extra spaces after "text=" in WhatsApp URL
 document.getElementById('waLink').href = `https://api.whatsapp.com/send?text=  ${encodeURIComponent(msg)}`;
