@@ -1176,7 +1176,7 @@ Total: ${results.length} students
 
 document.getElementById('waPreview').textContent = msg;
 // ✅ FIXED: Removed extra spaces after "text=" in WhatsApp URL
-document.getElementById('waLink').href = `https://api.whatsapp.com/send?text=  ${encodeURIComponent(msg)}`;
+document.getElementById('waLink').href = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
 document.getElementById('completeSummary').textContent = `${present.length} present • ${absent.length} absent • ${results.length} total`;
 }
 
