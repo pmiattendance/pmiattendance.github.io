@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>AttendFlow</title>
 <style>
-/* ===== PREMIUM THEME ===== */
+/* ===== PREMIUM THEME - MATERIAL DESIGN INSPIRED ===== */
 :root {
 --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 60%, #f093fb 100%);
 --surface: #ffffff;
@@ -21,6 +21,7 @@
 --success-gradient: linear-gradient(135deg, #10b981, #22c55e);
 --danger: #ef4444;
 --danger-gradient: linear-gradient(135deg, #ef4444, #f97316);
+--warning: #f59e0b;
 --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
 --shadow: 0 4px 14px rgba(0,0,0,0.08);
 --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
@@ -30,6 +31,9 @@
 --radius-full: 9999px;
 --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+--elevation-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+--elevation-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+--elevation-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body {
@@ -293,6 +297,7 @@ box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
 .list-item.add-school .list-icon { background: linear-gradient(135deg, #fef3c7, #fcd34d); color: #b45309; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2); }
 .list-item.add-grade .list-icon { background: linear-gradient(135deg, #d1fae5, #6ee7b7); color: #065f46; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2); }
 .list-item.add-student .list-icon { background: linear-gradient(135deg, #ede9fe, #c4b5fd); color: #7c3aed; box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2); }
+.list-item.student-list .list-icon { background: linear-gradient(135deg, #ffe4e6, #fda4af); color: #be123c; box-shadow: 0 2px 8px rgba(244, 63, 94, 0.2); }
 .list-details h4 {
 font-weight: 600;
 font-size: 1.02rem;
@@ -369,6 +374,40 @@ box-shadow: var(--shadow-glow);
 color: var(--text-secondary);
 opacity: 0.85;
 }
+/* ===== MULTI-SELECT SUBJECTS ===== */
+.subjects-container {
+border: 1.5px solid var(--border);
+border-radius: 13px;
+background: var(--surface-alt);
+padding: 12px;
+max-height: 180px;
+overflow-y: auto;
+}
+.subject-checkbox {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 8px 10px;
+border-radius: 8px;
+cursor: pointer;
+transition: var(--transition);
+}
+.subject-checkbox:hover {
+background: rgba(99, 102, 241, 0.08);
+}
+.subject-checkbox input[type="checkbox"] {
+width: 18px;
+height: 18px;
+accent-color: var(--primary);
+cursor: pointer;
+}
+.subject-checkbox label {
+font-size: 0.95rem;
+color: var(--text-primary);
+cursor: pointer;
+margin: 0;
+}
+/* ===== FORM ACTIONS ===== */
 .form-actions {
 display: flex;
 gap: 12px;
@@ -551,7 +590,138 @@ font-size: 0.89rem;
 margin-bottom: 9px;
 font-weight: 500;
 }
-/* ===== ALERT ===== */
+/* ===== TOAST NOTIFICATIONS ===== */
+#toastContainer {
+position: fixed;
+top: 20px;
+right: 20px;
+z-index: 2000;
+display: flex;
+flex-direction: column;
+gap: 10px;
+max-width: 320px;
+}
+.toast {
+background: var(--surface);
+border-left: 4px solid var(--primary);
+border-radius: 12px;
+padding: 14px 18px;
+box-shadow: var(--elevation-3);
+display: flex;
+align-items: center;
+gap: 12px;
+animation: slideInToast 0.3s ease, fadeOutToast 0.3s ease 2.7s forwards;
+min-width: 280px;
+}
+.toast.success { border-left-color: var(--success); }
+.toast.error { border-left-color: var(--danger); }
+.toast.warning { border-left-color: var(--warning); }
+.toast-icon {
+font-size: 1.3rem;
+font-weight: 700;
+}
+.toast.success .toast-icon { color: var(--success); }
+.toast.error .toast-icon { color: var(--danger); }
+.toast.warning .toast-icon { color: var(--warning); }
+.toast-message {
+font-size: 0.93rem;
+color: var(--text-primary);
+flex: 1;
+}
+@keyframes slideInToast {
+from { opacity: 0; transform: translateX(100px); }
+to { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeOutToast {
+from { opacity: 1; transform: translateX(0); }
+to { opacity: 0; transform: translateX(100px); }
+}
+/* ===== CONFIRM DIALOG ===== */
+.dialog-overlay {
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.5);
+display: flex;
+align-items: center;
+justify-content: center;
+z-index: 3000;
+animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.dialog {
+background: var(--surface);
+border-radius: var(--radius-lg);
+padding: 24px;
+max-width: 320px;
+width: 90%;
+box-shadow: var(--elevation-3);
+text-align: center;
+}
+.dialog h3 {
+font-size: 1.15rem;
+font-weight: 600;
+margin-bottom: 8px;
+color: var(--text-primary);
+}
+.dialog p {
+color: var(--text-secondary);
+font-size: 0.95rem;
+margin-bottom: 20px;
+}
+.dialog-actions {
+display: flex;
+gap: 12px;
+}
+.dialog-actions .btn { flex: 1; }
+/* ===== STUDENT DETAIL CARD ===== */
+.student-detail-card {
+background: var(--surface);
+border-radius: var(--radius-lg);
+padding: 28px 24px;
+box-shadow: var(--shadow-lg);
+margin: 14px 0 22px;
+border: 1px solid var(--border);
+}
+.student-detail-card .student-avatar {
+width: 88px;
+height: 88px;
+font-size: 1.9rem;
+margin-bottom: 18px;
+}
+.student-detail-card .student-name {
+font-size: 1.45rem;
+margin-bottom: 8px;
+}
+.student-detail-card .student-meta {
+font-size: 0.98rem;
+margin-bottom: 20px;
+}
+.student-detail-card .student-subjects {
+background: var(--surface-alt);
+border-radius: 12px;
+padding: 16px;
+margin-bottom: 24px;
+}
+.student-detail-card .student-subjects h4 {
+font-size: 0.9rem;
+color: var(--text-secondary);
+margin-bottom: 10px;
+font-weight: 500;
+}
+.subject-tags {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+}
+.subject-tag {
+background: var(--primary-gradient);
+color: white;
+padding: 6px 12px;
+border-radius: 20px;
+font-size: 0.82rem;
+font-weight: 500;
+}
+/* ===== ALERT (Legacy - kept for compatibility) ===== */
 .alert {
 padding: 13px 18px;
 border-radius: 13px;
@@ -711,6 +881,7 @@ border-radius: 10px;
 .attendance-card { padding: 28px 22px; }
 .btn { padding: 13px 20px; }
 .footer-credit { bottom: calc(8px + env(safe-area-inset-bottom)); right: 12px; font-size: 0.68rem; }
+#toastContainer { top: 12px; right: 12px; }
 }
 </style>
 </head>
@@ -720,6 +891,8 @@ border-radius: 10px;
 <div id="loadingOverlay" class="loading-overlay hidden">
 <div class="loading-spinner"></div>
 </div>
+<!-- Toast Container -->
+<div id="toastContainer"></div>
 <!-- Header -->
 <header class="header">
 <button id="backBtn" class="back-btn hidden" aria-label="Go back">←</button>
@@ -727,8 +900,6 @@ border-radius: 10px;
 </header>
 <!-- Footer Credit -->
 <div class="footer-credit">MADE BY BHAVESH PAWAR</div>
-<!-- Alerts -->
-<div id="alertContainer" style="padding: 0 20px;"></div>
 <!-- Main Content -->
 <main class="content">
 <!-- DASHBOARD -->
@@ -776,6 +947,13 @@ border-radius: 10px;
 <div class="list-details">
 <h4>Student</h4>
 <p>Enroll a student</p>
+</div>
+</div>
+<div class="list-item student-list" id="btnStudentList" role="button" tabindex="0">
+<div class="list-icon">📋</div>
+<div class="list-details">
+<h4>Student List</h4>
+<p>View & manage students</p>
 </div>
 </div>
 </div>
@@ -831,11 +1009,58 @@ border-radius: 10px;
 <label>Student Name <span class="req">*</span></label>
 <input type="text" id="inputStudent" placeholder="Full name" required autocomplete="name">
 </div>
+<div class="field">
+<label>Subjects <span class="req">*</span></label>
+<div class="subjects-container" id="subjectsContainer">
+<!-- Checkboxes will be populated here -->
+</div>
+<p class="text-sm text-muted">Select one or more subjects this student is enrolled in</p>
+</div>
 <div class="form-actions">
 <button type="button" class="btn btn-secondary" id="cancelStudent">Cancel</button>
 <button type="submit" class="btn btn-primary" id="saveStudentBtn">Enroll Student</button>
 </div>
 </form>
+</section>
+<!-- STUDENT LIST (NEW) -->
+<section id="screen-student-list" class="screen">
+<p class="text-muted mb-4 font-medium">Filter students</p>
+<div class="form">
+<div class="field">
+<label>Select School <span class="req">*</span></label>
+<select id="filterSchool" required>
+<option value="">Choose a school...</option>
+</select>
+</div>
+<div class="field">
+<label>Select Grade <span class="req">*</span></label>
+<select id="filterGrade" required disabled>
+<option value="">Select school first</option>
+</select>
+</div>
+</div>
+<div id="studentListView" class="list mt-4"></div>
+<div id="noStudents" class="list-empty hidden">
+<span class="list-empty-icon">👤</span>
+<h4>No students found</h4>
+<p class="text-sm">Select school and grade to view students</p>
+</div>
+</section>
+<!-- STUDENT DETAIL (NEW) -->
+<section id="screen-student-detail" class="screen">
+<div class="student-detail-card">
+<div class="student-avatar" id="detailAvatar">A</div>
+<div class="student-name" id="detailName">Student Name</div>
+<div class="student-meta" id="detailMeta">School • Grade</div>
+<div class="student-subjects">
+<h4>ENROLLED SUBJECTS</h4>
+<div class="subject-tags" id="detailSubjects"></div>
+</div>
+<div class="form-actions">
+<button type="button" class="btn btn-secondary" id="backToStudentList">Back</button>
+<button type="button" class="btn btn-danger" id="deleteStudentBtn">Delete Student</button>
+</div>
+</div>
 </section>
 <!-- SELECT SCHOOL -->
 <section id="screen-select-school" class="screen">
@@ -861,6 +1086,20 @@ border-radius: 10px;
 <button class="btn btn-primary" id="addGradeFromEmpty">Add Grade</button>
 </div>
 </section>
+<!-- SELECT SUBJECT (NEW STEP) -->
+<section id="screen-select-subject" class="screen">
+<p class="text-muted mb-2">For:</p>
+<p class="font-semibold mb-1" id="selectedSchoolSub" style="font-size: 1.1rem;"></p>
+<p class="font-medium mb-4" id="selectedGradeSub" style="color: var(--primary);"></p>
+<p class="text-muted mb-4 font-medium">Select a subject</p>
+<select id="selectAttendanceSubject" class="field" style="padding: 15px 17px; border: 1.5px solid var(--border); border-radius: 13px; font-size: 1rem; background: var(--surface-alt);">
+<option value="">Loading subjects...</option>
+</select>
+<div class="form-actions mt-4">
+<button type="button" class="btn btn-secondary" id="backToGrade">Back</button>
+<button type="button" class="btn btn-primary" id="startAttendanceWithSubject">Start Attendance</button>
+</div>
+</section>
 <!-- ATTENDANCE -->
 <section id="screen-attendance" class="screen">
 <div class="progress">
@@ -870,13 +1109,12 @@ border-radius: 10px;
 <div class="attendance-card">
 <div class="student-avatar" id="avatar">A</div>
 <div class="student-name" id="sName">Student Name</div>
-<div class="student-meta" id="sMeta">School • Grade</div>
+<div class="student-meta" id="sMeta">School • Grade • Subject</div>
 <div class="attendance-actions">
 <button class="btn btn-danger" id="btnAbsent">Absent</button>
 <button class="btn btn-success" id="btnPresent">Present</button>
 </div>
 </div>
-<p class="text-center text-muted text-sm"></p>
 </section>
 <!-- COMPLETE -->
 <section id="screen-complete" class="screen">
@@ -896,12 +1134,22 @@ border-radius: 10px;
 </div>
 </section>
 </main>
+<!-- Confirm Delete Dialog -->
+<div id="confirmDialog" class="dialog-overlay hidden">
+<div class="dialog">
+<h3>⚠️ Delete Student?</h3>
+<p id="confirmMessage">Are you sure you want to delete this student?</p>
+<div class="dialog-actions">
+<button class="btn btn-secondary" id="confirmCancel">Cancel</button>
+<button class="btn btn-danger" id="confirmDelete">Delete</button>
+</div>
+</div>
+</div>
 </div>
 <!-- Firebase SDK -->
 <script type="module">
-// ✅ FIXED: Removed trailing spaces from Firebase import URLs
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js  ";
-import { getFirestore, collection, doc, getDoc, setDoc, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js  ";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import { getFirestore, collection, doc, getDoc, setDoc, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -917,105 +1165,193 @@ appId: "1:424810497641:web:2daacbac6ccce231a1c4f8"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ===== DATA STORE (Firebase - Roster Only, NO Attendance) =====
+// ===== SUBJECTS (9 ONLY) =====
+const AVAILABLE_SUBJECTS = [
+  'Maths', 'Biology', 'Physics', 'Chemistry', 
+  'Language', 'Literature', 'Geography', 'History', 'French'
+];
+
+// ===== CACHE UTILITY (Data Only - No Session State) =====
+const Cache = {
+  prefix: 'attendflow_cache_',
+  ttl: 1000 * 60 * 30,
+  
+  key(type, params) {
+    return this.prefix + type + '_' + JSON.stringify(params).replace(/[^a-zA-Z0-9]/g, '_');
+  },
+  
+  get(type, params) {
+    try {
+      const key = this.key(type, params);
+      const cached = localStorage.getItem(key);
+      if (!cached) return null;
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp > this.ttl) {
+        localStorage.removeItem(key);
+        return null;
+      }
+      return data;
+    } catch { return null; }
+  },
+  
+  set(type, params, data) {
+    try {
+      const key = this.key(type, params);
+      localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() }));
+    } catch (e) { console.warn('Cache save failed:', e); }
+  },
+  
+  invalidate(type, params) {
+    const key = this.key(type, params);
+    localStorage.removeItem(key);
+    if (type === 'students') {
+      localStorage.removeItem(this.key('gradeList', { school: params?.school }));
+      localStorage.removeItem(this.key('schoolList', {}));
+    }
+  },
+  
+  clearAll() {
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith(this.prefix)) localStorage.removeItem(key);
+    });
+  }
+};
+
+// ===== DATA STORE =====
 const Store = {
 today() { return new Date().toISOString().split('T')[0]; },
 fmt(d) { if(!d) return ''; const [y,m,dd] = d.split('-'); return `${dd}/${m}/${y}`; },
-// Schools
+
 async getSchools() {
-const q = query(collection(db, 'schools'));
-const snapshot = await getDocs(q);
-return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const cached = Cache.get('schoolList', {});
+  if (cached) return cached;
+  try {
+    const q = query(collection(db, 'schools'));
+    const snapshot = await getDocs(q);
+    const schools = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    Cache.set('schoolList', {}, schools);
+    return schools;
+  } catch(e) {
+    console.error('Get schools error:', e);
+    return Cache.get('schoolList', {}) || [];
+  }
 },
 async addSchool(name) {
-const n = name.trim();
-if(n.length < 2) return { ok: false, err: 'Name too short' };
-try {
-const schoolRef = doc(db, 'schools', n);
-const schoolSnap = await getDoc(schoolRef);
-if(schoolSnap.exists()) return { ok: false, err: 'Already exists' };
-await setDoc(schoolRef, {
-name: n,
-created: new Date().toISOString()
-});
-return { ok: true };
-} catch(e) {
-console.error('Add school error:', e);
-return { ok: false, err: 'Save failed: ' + e.message };
-}
+  const n = name.trim();
+  if(n.length < 2) return { ok: false, err: 'Name too short' };
+  try {
+    const schoolRef = doc(db, 'schools', n);
+    const schoolSnap = await getDoc(schoolRef);
+    if(schoolSnap.exists()) return { ok: false, err: 'Already exists' };
+    await setDoc(schoolRef, { name: n, created: new Date().toISOString() });
+    Cache.invalidate('schoolList', {});
+    return { ok: true };
+  } catch(e) {
+    console.error('Add school error:', e);
+    return { ok: false, err: 'Save failed: ' + e.message };
+  }
 },
-// Grades
+
 async getGrades(schoolName) {
-const q = query(collection(db, 'schools', schoolName, 'grades'));
-const snapshot = await getDocs(q);
-return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const cached = Cache.get('gradeList', { school: schoolName });
+  if (cached) return cached;
+  try {
+    const q = query(collection(db, 'schools', schoolName, 'grades'));
+    const snapshot = await getDocs(q);
+    const grades = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    Cache.set('gradeList', { school: schoolName }, grades);
+    return grades;
+  } catch(e) {
+    console.error('Get grades error:', e);
+    return Cache.get('gradeList', { school: schoolName }) || [];
+  }
 },
 async addGrade(schoolName, gradeName) {
-const g = gradeName.trim();
-if(!g) return { ok: false, err: 'Grade required' };
-try {
-const gradeRef = doc(db, 'schools', schoolName, 'grades', g);
-const gradeSnap = await getDoc(gradeRef);
-if(gradeSnap.exists()) return { ok: false, err: 'Grade exists' };
-await setDoc(gradeRef, {
-name: g,
-school: schoolName,
-created: new Date().toISOString()
-});
-return { ok: true };
-} catch(e) {
-console.error('Add grade error:', e);
-return { ok: false, err: 'Save failed: ' + e.message };
-}
+  const g = gradeName.trim();
+  if(!g) return { ok: false, err: 'Grade required' };
+  try {
+    const gradeRef = doc(db, 'schools', schoolName, 'grades', g);
+    const gradeSnap = await getDoc(gradeRef);
+    if(gradeSnap.exists()) return { ok: false, err: 'Grade exists' };
+    await setDoc(gradeRef, { name: g, school: schoolName, created: new Date().toISOString() });
+    Cache.invalidate('gradeList', { school: schoolName });
+    Cache.invalidate('schoolList', {});
+    return { ok: true };
+  } catch(e) {
+    console.error('Add grade error:', e);
+    return { ok: false, err: 'Save failed: ' + e.message };
+  }
 },
-// Students (ROSTER ONLY - no attendance stored)
+
 async getStudents(schoolName, gradeName) {
-const q = query(collection(db, 'schools', schoolName, 'grades', gradeName, 'students'));
-const snapshot = await getDocs(q);
-return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const cached = Cache.get('students', { school: schoolName, grade: gradeName });
+  if (cached) return cached;
+  try {
+    const q = query(collection(db, 'schools', schoolName, 'grades', gradeName, 'students'));
+    const snapshot = await getDocs(q);
+    const students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    Cache.set('students', { school: schoolName, grade: gradeName }, students);
+    return students;
+  } catch(e) {
+    console.error('Get students error:', e);
+    return Cache.get('students', { school: schoolName, grade: gradeName }) || [];
+  }
 },
-async addStudent(schoolName, gradeName, name) {
-const n = name.trim();
-if(n.length < 2) return { ok: false, err: 'Name too short' };
-try {
-const studentsRef = collection(db, 'schools', schoolName, 'grades', gradeName, 'students');
-const q = query(studentsRef, where('name', '==', n));
-const snapshot = await getDocs(q);
-if(!snapshot.empty) return { ok: false, err: 'Already enrolled' };
-const newStudentRef = doc(studentsRef);
-await setDoc(newStudentRef, {
-name: n,
-added: new Date().toISOString()
-// 🚫 NO attendance field stored in Firestore
-});
-return { ok: true, id: newStudentRef.id };
-} catch(e) {
-console.error('Add student error:', e);
-return { ok: false, err: 'Save failed: ' + e.message };
-}
+async addStudent(schoolName, gradeName, name, subjects) {
+  const n = name.trim();
+  if(n.length < 2) return { ok: false, err: 'Name too short' };
+  if(!subjects || subjects.length === 0) return { ok: false, err: 'Select at least one subject' };
+  try {
+    const studentsRef = collection(db, 'schools', schoolName, 'grades', gradeName, 'students');
+    const q = query(studentsRef, where('name', '==', n));
+    const snapshot = await getDocs(q);
+    if(!snapshot.empty) return { ok: false, err: 'Already enrolled' };
+    const newStudentRef = doc(studentsRef);
+    await setDoc(newStudentRef, {
+      name: n,
+      subjects: subjects,
+      added: new Date().toISOString()
+    });
+    Cache.invalidate('students', { school: schoolName, grade: gradeName });
+    Cache.invalidate('gradeList', { school: schoolName });
+    Cache.invalidate('schoolList', {});
+    return { ok: true, id: newStudentRef.id };
+  } catch(e) {
+    console.error('Add student error:', e);
+    return { ok: false, err: 'Save failed: ' + e.message };
+  }
 },
 async deleteStudent(schoolName, gradeName, studentId) {
-try {
-await deleteDoc(doc(db, 'schools', schoolName, 'grades', gradeName, 'students', studentId));
-return { ok: true };
-} catch(e) {
-console.error('Delete student error:', e);
-return { ok: false, err: e.message };
+  try {
+    await deleteDoc(doc(db, 'schools', schoolName, 'grades', gradeName, 'students', studentId));
+    Cache.invalidate('students', { school: schoolName, grade: gradeName });
+    Cache.invalidate('gradeList', { school: schoolName });
+    Cache.invalidate('schoolList', {});
+    return { ok: true };
+  } catch(e) {
+    console.error('Delete student error:', e);
+    return { ok: false, err: e.message };
+  }
 }
-},
-// 🚫 NO attendance methods - attendance is session-only, not persisted
 };
 
 // ===== APP STATE =====
 const State = {
 screen: 'dashboard',
 session: {
-school: null,
-grade: null,
-students: [],
-idx: 0,
-results: []  // In-memory attendance for current session only
-}
+  school: null,
+  grade: null,
+  subject: null,
+  students: [],
+  idx: 0,
+  results: []
+},
+studentList: {
+  school: null,
+  grade: null,
+  selectedStudent: null
+},
+deletePending: null
 };
 
 // ===== UI HELPERS =====
@@ -1027,54 +1363,77 @@ document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
 document.getElementById(`screen-${id}`).classList.add('active');
 const backBtn = document.getElementById('backBtn');
 if(id === 'dashboard') {
-backBtn.classList.add('hidden');
-} else if(['add-school', 'add-grade', 'add-student'].includes(id)) {
-backBtn.classList.remove('hidden');
-backBtn.onclick = () => show('dashboard');
-} else if(['select-school', 'select-grade', 'attendance', 'complete'].includes(id)) {
-backBtn.classList.remove('hidden');
-backBtn.onclick = () => {
-const flow = ['select-school', 'select-grade', 'attendance', 'complete'];
-const i = flow.indexOf(id);
-if(i > 0) {
-if(i === 1) State.session.school = null;
-show(flow[i-1]);
-} else {
-show('dashboard');
-}
-};
+  backBtn.classList.add('hidden');
+} else if(['add-school', 'add-grade', 'add-student', 'student-list', 'student-detail'].includes(id)) {
+  backBtn.classList.remove('hidden');
+  backBtn.onclick = () => show('dashboard');
+} else if(['select-school', 'select-grade', 'select-subject', 'attendance', 'complete'].includes(id)) {
+  backBtn.classList.remove('hidden');
+  backBtn.onclick = () => {
+    const flow = ['select-school', 'select-grade', 'select-subject', 'attendance', 'complete'];
+    const i = flow.indexOf(id);
+    if(i > 0) {
+      if(i === 1) State.session.school = null;
+      if(i === 2) State.session.grade = null;
+      if(i === 3) State.session.subject = null;
+      show(flow[i-1]);
+    } else {
+      show('dashboard');
+    }
+  };
 } else if(id === 'add-menu') {
-backBtn.classList.remove('hidden');
-backBtn.onclick = () => show('dashboard');
+  backBtn.classList.remove('hidden');
+  backBtn.onclick = () => show('dashboard');
 }
 State.screen = id;
+// ✅ REMOVED: SessionStore.save(State) - No state persistence on refresh
 document.querySelector('.content').scrollTop = 0;
 }
-function alert(msg, type = 'success') {
-const c = document.getElementById('alertContainer');
-const a = document.createElement('div');
-a.className = `alert ${type}`;
-a.innerHTML = `<span>${type === 'success' ? '✓' : '✕'}</span> ${msg}`;
-c.appendChild(a);
-setTimeout(() => {
-a.style.opacity = '0';
-a.style.transform = 'translateY(-4px)';
-setTimeout(() => a.remove(), 150);
-}, 2400);
+
+// ===== TOAST NOTIFICATIONS =====
+function toast(message, type = 'success') {
+const container = document.getElementById('toastContainer');
+const toast = document.createElement('div');
+toast.className = `toast ${type}`;
+const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : '⚠';
+toast.innerHTML = `<span class="toast-icon">${icon}</span><span class="toast-message">${message}</span>`;
+container.appendChild(toast);
+setTimeout(() => toast.remove(), 3000);
+}
+
+// ===== CONFIRM DIALOG =====
+function confirmDialog(message, onConfirm, onCancel) {
+document.getElementById('confirmMessage').textContent = message;
+document.getElementById('confirmDialog').classList.remove('hidden');
+const handleConfirm = () => {
+  document.getElementById('confirmDialog').classList.add('hidden');
+  document.getElementById('confirmDelete').removeEventListener('click', handleConfirm);
+  document.getElementById('confirmCancel').removeEventListener('click', handleCancel);
+  onConfirm();
+};
+const handleCancel = () => {
+  document.getElementById('confirmDialog').classList.add('hidden');
+  document.getElementById('confirmDelete').removeEventListener('click', handleConfirm);
+  document.getElementById('confirmCancel').removeEventListener('click', handleCancel);
+  if (onCancel) onCancel();
+};
+document.getElementById('confirmDelete').addEventListener('click', handleConfirm);
+document.getElementById('confirmCancel').addEventListener('click', handleCancel);
 }
 
 // ===== RENDER FUNCTIONS =====
 async function renderSchoolSelects() {
 showLoading(true);
 try {
-const schools = await Store.getSchools();
-const opts = '<option value="">Choose...</option>' + schools.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
-document.getElementById('selectGradeSchool').innerHTML = opts;
-document.getElementById('selectStudentSchool').innerHTML = opts;
+  const schools = await Store.getSchools();
+  const opts = '<option value="">Choose...</option>' + schools.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+  document.getElementById('selectGradeSchool').innerHTML = opts;
+  document.getElementById('selectStudentSchool').innerHTML = opts;
+  document.getElementById('filterSchool').innerHTML = '<option value="">Choose a school...</option>' + schools.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
 } catch(e) {
-alert('Failed to load schools', 'error');
+  toast('Failed to load schools', 'error');
 } finally {
-showLoading(false);
+  showLoading(false);
 }
 }
 async function renderSchoolList() {
@@ -1082,35 +1441,35 @@ showLoading(true);
 const list = document.getElementById('schoolList');
 const empty = document.getElementById('noSchools');
 try {
-const schools = await Store.getSchools();
-if(!schools.length) {
-list.classList.add('hidden');
-empty.classList.remove('hidden');
-return;
-}
-empty.classList.add('hidden');
-list.classList.remove('hidden');
-list.innerHTML = '';
-for(const school of schools) {
-const grades = await Store.getGrades(school.name);
-let totalStudents = 0;
-for(const grade of grades) {
-const students = await Store.getStudents(school.name, grade.name);
-totalStudents += students.length;
-}
-const item = document.createElement('div');
-item.className = 'list-item';
-item.dataset.school = school.name;
-item.innerHTML = `
+  const schools = await Store.getSchools();
+  if(!schools.length) {
+    list.classList.add('hidden');
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+  list.classList.remove('hidden');
+  list.innerHTML = '';
+  for(const school of schools) {
+    const grades = await Store.getGrades(school.name);
+    let totalStudents = 0;
+    for(const grade of grades) {
+      const students = await Store.getStudents(school.name, grade.name);
+      totalStudents += students.length;
+    }
+    const item = document.createElement('div');
+    item.className = 'list-item';
+    item.dataset.school = school.name;
+    item.innerHTML = `
 <div class="list-icon">${school.name[0].toUpperCase()}</div>
 <div class="list-details"><h4>${school.name}</h4><p>${grades.length} grades • ${totalStudents} students</p></div>
 `;
-list.appendChild(item);
-}
+    list.appendChild(item);
+  }
 } catch(e) {
-alert('Failed to load schools', 'error');
+  toast('Failed to load schools', 'error');
 } finally {
-showLoading(false);
+  showLoading(false);
 }
 }
 async function renderGradeList(school) {
@@ -1119,70 +1478,142 @@ const list = document.getElementById('gradeList');
 const empty = document.getElementById('noGrades');
 document.getElementById('selectedSchool').textContent = school;
 try {
-const grades = await Store.getGrades(school);
-if(!grades.length) {
-list.classList.add('hidden');
-empty.classList.remove('hidden');
-return;
-}
-empty.classList.add('hidden');
-list.classList.remove('hidden');
-list.innerHTML = '';
-for(const grade of grades) {
-const students = await Store.getStudents(school, grade.name);
-const item = document.createElement('div');
-item.className = 'list-item';
-item.dataset.grade = grade.name;
-item.innerHTML = `
+  const grades = await Store.getGrades(school);
+  if(!grades.length) {
+    list.classList.add('hidden');
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+  list.classList.remove('hidden');
+  list.innerHTML = '';
+  for(const grade of grades) {
+    const students = await Store.getStudents(school, grade.name);
+    const item = document.createElement('div');
+    item.className = 'list-item';
+    item.dataset.grade = grade.name;
+    item.innerHTML = `
 <div class="list-icon">${grade.name[0].toUpperCase()}</div>
 <div class="list-details"><h4>${grade.name}</h4><p>${students.length} students</p></div>
 `;
-list.appendChild(item);
-}
+    list.appendChild(item);
+  }
 } catch(e) {
-alert('Failed to load grades', 'error');
+  toast('Failed to load grades', 'error');
 } finally {
-showLoading(false);
+  showLoading(false);
 }
+}
+function renderSubjectsCheckboxes() {
+const container = document.getElementById('subjectsContainer');
+container.innerHTML = AVAILABLE_SUBJECTS.map(subject => `
+<div class="subject-checkbox">
+<input type="checkbox" id="subj_${subject.replace(/\s+/g, '_')}" value="${subject}">
+<label for="subj_${subject.replace(/\s+/g, '_')}">${subject}</label>
+</div>
+`).join('');
+}
+function getSelectedSubjects() {
+const checkboxes = document.querySelectorAll('#subjectsContainer input[type="checkbox"]:checked');
+return Array.from(checkboxes).map(cb => cb.value);
+}
+function renderSubjectDropdown() {
+const select = document.getElementById('selectAttendanceSubject');
+select.innerHTML = '<option value="">Select a subject...</option>' + 
+AVAILABLE_SUBJECTS.map(subj => `<option value="${subj}">${subj}</option>`).join('');
 }
 function renderCard() {
-const { students, idx, school, grade } = State.session;
+const { students, idx, school, grade, subject } = State.session;
 if(idx >= students.length) { complete(); return; }
 const s = students[idx];
 const initials = s.name.split(' ').map(n => n.trim()[0]).filter(c=>c).slice(0,2).join('').toUpperCase() || '?';
 document.getElementById('avatar').textContent = initials;
 document.getElementById('sName').textContent = s.name;
-document.getElementById('sMeta').textContent = `${school} • ${grade}`;
+document.getElementById('sMeta').textContent = `${school} • ${grade} • ${subject}`;
 document.getElementById('currentNum').textContent = idx + 1;
 document.getElementById('totalNum').textContent = students.length;
 document.getElementById('progressFill').style.width = `${students.length ? (idx/students.length)*100 : 0}%`;
 }
 
-// Generate report from IN-MEMORY session results only (not from Firestore)
 function makeReport() {
-const { school, grade, results } = State.session;
+const { school, grade, subject, results } = State.session;
 const today = Store.fmt(Store.today());
 const present = results.filter(r=>r.status==='present').map(r=>`• ${r.name}`);
 const absent = results.filter(r=>r.status==='absent').map(r=>`• ${r.name}`);
 const msg = `📊 Attendance Report
 🏫 ${school}
 📚 ${grade}
+📖 ${subject}
 📅 ${today}
 ✅ Present (${present.length})
 ${present.join('\n')||'• None'}
 ❌ Absent (${absent.length})
 ${absent.join('\n')||'• None'}
-Total: ${results.length} students
-⚠️ Note: Attendance not saved to cloud`;
+Total: ${results.length} students`;
 document.getElementById('waPreview').textContent = msg;
-// ✅ FIXED: Removed extra spaces after "text=" in WhatsApp URL
-document.getElementById('waLink').href = `https://api.whatsapp.com/send?text= ${encodeURIComponent(msg)}`;
+document.getElementById('waLink').href = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
 document.getElementById('completeSummary').textContent = `${present.length} present • ${absent.length} absent • ${results.length} total`;
+}
+
+// ===== STUDENT LIST FUNCTIONS =====
+async function renderStudentListView() {
+const { school, grade } = State.studentList;
+const list = document.getElementById('studentListView');
+const empty = document.getElementById('noStudents');
+
+if (!school || !grade) {
+  list.classList.add('hidden');
+  empty.classList.remove('hidden');
+  empty.querySelector('p').textContent = 'Select school and grade to view students';
+  return;
+}
+
+showLoading(true);
+try {
+  const students = await Store.getStudents(school, grade);
+  if(!students.length) {
+    list.classList.add('hidden');
+    empty.classList.remove('hidden');
+    empty.querySelector('p').textContent = 'No students in this grade';
+    return;
+  }
+  empty.classList.add('hidden');
+  list.classList.remove('hidden');
+  list.innerHTML = '';
+  for(const student of students) {
+    const item = document.createElement('div');
+    item.className = 'list-item';
+    item.dataset.studentId = student.id;
+    const initials = student.name.split(' ').map(n => n.trim()[0]).filter(c=>c).slice(0,2).join('').toUpperCase() || '?';
+    item.innerHTML = `
+<div class="list-icon">${initials}</div>
+<div class="list-details"><h4>${student.name}</h4><p>${student.subjects?.length || 0} subjects</p></div>
+`;
+    list.appendChild(item);
+  }
+} catch(e) {
+  toast('Failed to load students', 'error');
+} finally {
+  showLoading(false);
+}
+}
+
+function renderStudentDetail(student) {
+const initials = student.name.split(' ').map(n => n.trim()[0]).filter(c=>c).slice(0,2).join('').toUpperCase() || '?';
+document.getElementById('detailAvatar').textContent = initials;
+document.getElementById('detailName').textContent = student.name;
+document.getElementById('detailMeta').textContent = `${State.studentList.school} • ${State.studentList.grade}`;
+const subjectsContainer = document.getElementById('detailSubjects');
+if (student.subjects && student.subjects.length > 0) {
+  subjectsContainer.innerHTML = student.subjects.map(subj => `<span class="subject-tag">${subj}</span>`).join('');
+} else {
+  subjectsContainer.innerHTML = '<span class="text-muted">No subjects enrolled</span>';
+}
 }
 
 // ===== EVENT HANDLERS =====
 // Dashboard
-document.getElementById('btnAdd').onclick = () => show('add-menu');
+document.getElementById('btnAdd').onclick = () => { show('add-menu'); };
 document.getElementById('btnStart').onclick = async () => {
 await renderSchoolList();
 show('select-school');
@@ -1195,9 +1626,17 @@ show('add-grade');
 };
 document.getElementById('btnAddStudent').onclick = async () => {
 await renderSchoolSelects();
+renderSubjectsCheckboxes();
 show('add-student');
 };
-// FIX: Cancel buttons now navigate back
+document.getElementById('btnStudentList').onclick = async () => {
+await renderSchoolSelects();
+State.studentList = { school: null, grade: null, selectedStudent: null };
+document.getElementById('filterGrade').innerHTML = '<option value="">Select school first</option>';
+document.getElementById('filterGrade').disabled = true;
+show('student-list');
+};
+// Cancel buttons
 document.getElementById('cancelSchool').onclick = (e) => {
 e.preventDefault();
 document.getElementById('formSchool').reset();
@@ -1224,10 +1663,10 @@ btn.classList.add('btn-loading');
 btn.disabled = true;
 const r = await Store.addSchool(document.getElementById('inputSchool').value);
 if(r.ok) {
-alert('School saved');
-document.getElementById('formSchool').reset();
-await renderSchoolSelects();
-} else alert(r.err, 'error');
+  toast('School saved ✓');
+  document.getElementById('formSchool').reset();
+  await renderSchoolSelects();
+} else toast(r.err, 'error');
 btn.classList.remove('btn-loading');
 btn.disabled = false;
 };
@@ -1235,15 +1674,15 @@ document.getElementById('formGrade').onsubmit = async (e) => {
 e.preventDefault();
 const school = document.getElementById('selectGradeSchool').value;
 const grade = document.getElementById('inputGrade').value;
-if(!school || !grade) { alert('Fill all fields', 'error'); return; }
+if(!school || !grade) { toast('Fill all fields', 'error'); return; }
 const btn = document.getElementById('saveGradeBtn');
 btn.classList.add('btn-loading');
 btn.disabled = true;
 const r = await Store.addGrade(school, grade);
 if(r.ok) {
-alert('Grade saved');
-document.getElementById('formGrade').reset();
-} else alert(r.err, 'error');
+  toast('Grade saved ✓');
+  document.getElementById('formGrade').reset();
+} else toast(r.err, 'error');
 btn.classList.remove('btn-loading');
 btn.disabled = false;
 };
@@ -1251,24 +1690,24 @@ document.getElementById('selectStudentSchool').onchange = async function() {
 const sel = document.getElementById('selectStudentGrade');
 const school = this.value;
 if(!school) {
-sel.innerHTML = '<option value="">Select school first</option>';
-sel.disabled = true;
-return;
+  sel.innerHTML = '<option value="">Select school first</option>';
+  sel.disabled = true;
+  return;
 }
 sel.disabled = true;
 sel.innerHTML = '<option value="">Loading...</option>';
 try {
-const grades = await Store.getGrades(school);
-if(!grades.length) {
-sel.innerHTML = '<option value="">No grades</option>';
-sel.disabled = true;
-return;
-}
-sel.innerHTML = '<option value="">Select...</option>' + grades.map(g=>`<option value="${g.name}">${g.name}</option>`).join('');
-sel.disabled = false;
+  const grades = await Store.getGrades(school);
+  if(!grades.length) {
+    sel.innerHTML = '<option value="">No grades</option>';
+    sel.disabled = true;
+    return;
+  }
+  sel.innerHTML = '<option value="">Select...</option>' + grades.map(g=>`<option value="${g.name}">${g.name}</option>`).join('');
+  sel.disabled = false;
 } catch(e) {
-sel.innerHTML = '<option value="">Error loading</option>';
-alert('Failed to load grades', 'error');
+  sel.innerHTML = '<option value="">Error loading</option>';
+  toast('Failed to load grades', 'error');
 }
 };
 document.getElementById('formStudent').onsubmit = async (e) => {
@@ -1276,75 +1715,164 @@ e.preventDefault();
 const school = document.getElementById('selectStudentSchool').value;
 const grade = document.getElementById('selectStudentGrade').value;
 const name = document.getElementById('inputStudent').value;
-if(!school || !grade || !name) { alert('Fill all fields', 'error'); return; }
+const subjects = getSelectedSubjects();
+if(!school || !grade || !name) { toast('Fill all fields', 'error'); return; }
+if(subjects.length === 0) { toast('Select at least one subject', 'warning'); return; }
 const btn = document.getElementById('saveStudentBtn');
 btn.classList.add('btn-loading');
 btn.disabled = true;
-const r = await Store.addStudent(school, grade, name);
+const r = await Store.addStudent(school, grade, name, subjects);
 if(r.ok) {
-alert('Student enrolled');
-document.getElementById('inputStudent').value = '';
-} else alert(r.err, 'error');
+  toast('Student enrolled ✓');
+  document.getElementById('inputStudent').value = '';
+  document.querySelectorAll('#subjectsContainer input[type="checkbox"]').forEach(cb => cb.checked = false);
+} else toast(r.err, 'error');
 btn.classList.remove('btn-loading');
 btn.disabled = false;
+};
+// Student List Filters
+document.getElementById('filterSchool').onchange = async function() {
+const school = this.value;
+State.studentList.school = school;
+const gradeSel = document.getElementById('filterGrade');
+if(!school) {
+  gradeSel.innerHTML = '<option value="">Select school first</option>';
+  gradeSel.disabled = true;
+  State.studentList.grade = null;
+  renderStudentListView();
+  return;
+}
+gradeSel.disabled = true;
+gradeSel.innerHTML = '<option value="">Loading...</option>';
+try {
+  const grades = await Store.getGrades(school);
+  if(!grades.length) {
+    gradeSel.innerHTML = '<option value="">No grades</option>';
+    gradeSel.disabled = true;
+    State.studentList.grade = null;
+    renderStudentListView();
+    return;
+  }
+  gradeSel.innerHTML = '<option value="">Select a grade...</option>' + grades.map(g=>`<option value="${g.name}">${g.name}</option>`).join('');
+  gradeSel.disabled = false;
+  State.studentList.grade = null;
+  renderStudentListView();
+} catch(e) {
+  gradeSel.innerHTML = '<option value="">Error loading</option>';
+  toast('Failed to load grades', 'error');
+}
+};
+document.getElementById('filterGrade').onchange = async function() {
+const grade = this.value;
+State.studentList.grade = grade;
+await renderStudentListView();
+};
+// Student List Click
+document.getElementById('studentListView').onclick = async (e) => {
+const item = e.target.closest('.list-item[data-student-id]');
+if(item) {
+  const studentId = item.dataset.studentId;
+  const students = await Store.getStudents(State.studentList.school, State.studentList.grade);
+  const student = students.find(s => s.id === studentId);
+  if(student) {
+    State.studentList.selectedStudent = student;
+    renderStudentDetail(student);
+    show('student-detail');
+  }
+}
+};
+// Student Detail Back
+document.getElementById('backToStudentList').onclick = () => {
+State.studentList.selectedStudent = null;
+show('student-list');
+};
+// Delete Student
+document.getElementById('deleteStudentBtn').onclick = () => {
+const student = State.studentList.selectedStudent;
+if(!student) return;
+confirmDialog(`Delete "${student.name}" from ${State.studentList.grade}? This cannot be undone.`, async () => {
+  showLoading(true);
+  const result = await Store.deleteStudent(State.studentList.school, State.studentList.grade, student.id);
+  showLoading(false);
+  if(result.ok) {
+    toast('Student deleted ✓');
+    State.studentList.selectedStudent = null;
+    await renderStudentListView();
+    show('student-list');
+  } else {
+    toast(result.err || 'Delete failed', 'error');
+  }
+});
 };
 // Selection lists
 document.getElementById('schoolList').onclick = async (e) => {
 const item = e.target.closest('.list-item[data-school]');
 if(item) {
-State.session.school = item.dataset.school;
-await renderGradeList(item.dataset.school);
-show('select-grade');
+  State.session.school = item.dataset.school;
+  await renderGradeList(item.dataset.school);
+  show('select-grade');
 }
 };
-document.getElementById('gradeList').onclick = (e) => {
+document.getElementById('gradeList').onclick = async (e) => {
 const item = e.target.closest('.list-item[data-grade]');
-if(item) startAttendance(item.dataset.grade);
+if(item) {
+  State.session.grade = item.dataset.grade;
+  document.getElementById('selectedSchoolSub').textContent = State.session.school;
+  document.getElementById('selectedGradeSub').textContent = `Grade: ${State.session.grade}`;
+  renderSubjectDropdown();
+  show('select-subject');
+}
 };
-async function startAttendance(grade) {
-const school = State.session.school;
-if(!school) { alert('Select school first', 'error'); return; }
+// Subject selection handlers
+document.getElementById('backToGrade').onclick = () => {
+State.session.grade = null;
+show('select-grade');
+};
+document.getElementById('startAttendanceWithSubject').onclick = async () => {
+const subject = document.getElementById('selectAttendanceSubject').value;
+if(!subject) { toast('Please select a subject', 'warning'); return; }
+State.session.subject = subject;
+await startAttendanceWithSubject();
+};
+async function startAttendanceWithSubject() {
+const { school, grade, subject } = State.session;
 showLoading(true);
 try {
-const students = await Store.getStudents(school, grade);
-// Initialize session with in-memory results array
-State.session = {
-school,
-grade,
-students,
-idx: 0,
-results: []  // Fresh array for this session only
-};
-if(!students.length) {
-makeReport();  // Use in-memory function, no DB fetch
-show('complete');
-return;
-}
-renderCard();
-show('attendance');
+  const allStudents = await Store.getStudents(school, grade);
+  const filteredStudents = allStudents.filter(s => 
+    s.subjects && Array.isArray(s.subjects) && s.subjects.includes(subject)
+  );
+  State.session = { school, grade, subject, students: filteredStudents, idx: 0, results: [] };
+  if(!filteredStudents.length) {
+    toast(`No students found for ${subject}`, 'warning');
+    makeReport();
+    show('complete');
+    return;
+  }
+  toast(`Found ${filteredStudents.length} student(s) for ${subject}`);
+  renderCard();
+  show('attendance');
 } catch(e) {
-alert('Failed to load students', 'error');
+  toast('Failed to load students', 'error');
 } finally {
-showLoading(false);
+  showLoading(false);
 }
 }
-// Mark attendance IN-MEMORY ONLY (not saved to Firestore)
+// Mark attendance
 function mark(status) {
 const { students, idx } = State.session;
 if(idx >= students.length) { complete(); return; }
 const student = students[idx];
-// 🚫 NO database call - only store in session memory
 State.session.results.push({ name: student.name, status });
 State.session.idx++;
 setTimeout(() => {
-if(State.session.idx >= students.length) complete();
-else renderCard();
+  if(State.session.idx >= students.length) complete();
+  else renderCard();
 }, 140);
 }
 document.getElementById('btnPresent').onclick = () => mark('present');
 document.getElementById('btnAbsent').onclick = () => mark('absent');
 function complete() {
-// Generate report from session results only
 makeReport();
 show('complete');
 }
@@ -1358,34 +1886,30 @@ document.getElementById('addGradeFromEmpty').onclick = async () => {
 await renderSchoolSelects();
 show('add-grade');
 };
+
 // Keyboard shortcuts
 document.onkeydown = (e) => {
 if(State.screen === 'attendance') {
-if(e.key === 'ArrowRight' || e.key === 'p' || e.key === 'P' || e.key === 'Enter') { e.preventDefault(); mark('present'); }
-if(e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { e.preventDefault(); mark('absent'); }
+  if(e.key === 'ArrowRight' || e.key === 'p' || e.key === 'P' || e.key === 'Enter') { e.preventDefault(); mark('present'); }
+  if(e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { e.preventDefault(); mark('absent'); }
 }
 if(e.key === 'Escape' && State.screen !== 'dashboard') {
-e.preventDefault();
-document.getElementById('backBtn').click();
+  e.preventDefault();
+  document.getElementById('backBtn').click();
 }
 };
-// Touch swipe for attendance
-let touchX = 0;
-document.getElementById('screen-attendance').ontouchstart = (e) => { touchX = e.touches[0].clientX; };
-document.getElementById('screen-attendance').ontouchend = (e) => {
-const diff = touchX - e.changedTouches[0].clientX;
-if(Math.abs(diff) > 45) { e.preventDefault(); mark(diff > 0 ? 'absent' : 'present'); }
-};
+
 // Accessibility
 document.querySelectorAll('[role="button"]').forEach(el => {
 el.onkeydown = (e) => {
-if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+  if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
 };
 });
-// Init
+
+// ✅ INIT: Always start fresh at Dashboard (No Session Restore)
 (async () => {
 await renderSchoolSelects();
-setTimeout(() => alert('Ready to go'), 500);
+setTimeout(() => toast('Ready to go ✓'), 500);
 })();
 </script>
 </body>
