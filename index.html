@@ -1553,7 +1553,7 @@ Present (${present.length})
   
 Absent (${absent.length})  
   ${absent.join('\n')||'• None'}
-    
+  
 Total: ${results.length} students`;  
 document.getElementById('waPreview').textContent = msg;
 document.getElementById('waLink').href = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
