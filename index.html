@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>AttendFlow</title>
+<title>PMI Attendance</title>
 <style>
 /* ===== PREMIUM THEME - MATERIAL DESIGN INSPIRED ===== */
 :root {
@@ -1541,10 +1541,9 @@ const today = Store.fmt(Store.today());
 const present = results.filter(r=>r.status==='present').map(r=>`• ${r.name}`);
 const absent = results.filter(r=>r.status==='absent').map(r=>`• ${r.name}`);
 const msg = `Attendance Report
- ${school}
- ${grade}
- ${subject}
- ${today}
+ ${school}  ${grade}
+ Subject: ${subject}
+ Date:	  ${today}
  Present (${present.length})
 ${present.join('\n')||'• None'}
  Absent (${absent.length})
