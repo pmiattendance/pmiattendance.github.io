@@ -1541,14 +1541,20 @@ const today = Store.fmt(Store.today());
 const present = results.filter(r=>r.status==='present').map(r=>`• ${r.name}`);
 const absent = results.filter(r=>r.status==='absent').map(r=>`• ${r.name}`);
 const msg = `Attendance Report
- ${school}  ${grade}
- Subject: ${subject}
- Date:	  ${today}
- Present (${present.length})
-${present.join('\n')||'• None'}
- Absent (${absent.length})
-${absent.join('\n')||'• None'}
-Total: ${results.length} students`;
+
+ *${school}  ${grade}*
+ 
+ Subject: *${subject}*
+ 
+ Date: *${today}*
+ 
+ *Present (${present.length})*
+    ${present.join('\n')||'• None'}
+    
+* Absent (${absent.length})*
+    ${absent.join('\n')||'• None'}
+    
+*Total: ${results.length} students`;*
 document.getElementById('waPreview').textContent = msg;
 document.getElementById('waLink').href = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
 document.getElementById('completeSummary').textContent = `${present.length} present • ${absent.length} absent • ${results.length} total`;
