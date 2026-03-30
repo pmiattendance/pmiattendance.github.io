@@ -1542,19 +1542,19 @@ const present = results.filter(r=>r.status==='present').map(r=>`• ${r.name}`);
 const absent = results.filter(r=>r.status==='absent').map(r=>`• ${r.name}`);
 const msg = `Attendance Report
 
- "*"${school}  ${grade}"*"
+ ${grade} ${school} 
  
- Subject: "*"${subject}"*"
+Subject: ${subject}  
  
- Date: "*"${today}"*"
+Date: ${today}  
  
- "*"Present (${present.length})"*"
-    ${present.join('\n')||'• None'}
+Present (${present.length})  
+  ${present.join('\n')||'• None'}
     
-"*" Absent (${absent.length})"*"
-    ${absent.join('\n')||'• None'}
+Absent (${absent.length})  
+  ${absent.join('\n')||'• None'}
     
-"*"Total: ${results.length} students`;"*"
+Total: ${results.length} students`;  
 document.getElementById('waPreview').textContent = msg;
 document.getElementById('waLink').href = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
 document.getElementById('completeSummary').textContent = `${present.length} present • ${absent.length} absent • ${results.length} total`;
