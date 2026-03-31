@@ -883,6 +883,40 @@ border-radius: 10px;
 .footer-credit { bottom: calc(8px + env(safe-area-inset-bottom)); right: 12px; font-size: 0.68rem; }
 #toastContainer { top: 12px; right: 12px; }
 }
+
+/* ===== DELETE BUTTON STYLING ===== */
+.btn-delete-school,
+.btn-delete-student-quick {
+  opacity: 0;
+  transition: var(--transition);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px !important;
+  padding: 0 !important;
+  flex-shrink: 0;
+}
+.list-item:hover .btn-delete-school,
+.list-item:hover .btn-delete-student-quick {
+  opacity: 1;
+}
+.btn-delete-school:hover,
+.btn-delete-student-quick:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
+}
+.btn-delete-school:active,
+.btn-delete-student-quick:active {
+  transform: scale(0.95);
+}
+@media (max-width: 480px) {
+  .btn-delete-school,
+  .btn-delete-student-quick {
+    opacity: 1;
+  }
+}
 </style>
 </head>
 <body>
@@ -1137,12 +1171,11 @@ border-radius: 10px;
 <!-- Confirm Delete Dialog -->
 <div id="confirmDialog" class="dialog-overlay hidden">
 <div class="dialog">
-<h3>⚠️ Delete Student?</h3>
-<p id="confirmMessage">Are you sure you want to delete this student?</p>
+<h3>⚠️ Delete?</h3>
+<p id="confirmMessage">Are you sure you want to delete this?</p>
 <div class="dialog-actions">
 <button class="btn btn-secondary" id="confirmCancel">Cancel</button>
 <button class="btn btn-danger" id="confirmDelete">Delete</button>
-</div>
 </div>
 </div>
 </div>
@@ -1171,7 +1204,7 @@ const AVAILABLE_SUBJECTS = [
   'Language', 'Literature', 'Geography', 'History', 'French'
 ];
 
-// ===== CACHE UTILITY (Data Only - No Session State) =====
+// ===== CACHE UTILITY =====
 const Cache = {
   prefix: 'attendflow_cache_',
   ttl: 1000 * 60 * 30,
@@ -1249,6 +1282,35 @@ async addSchool(name) {
   } catch(e) {
     console.error('Add school error:', e);
     return { ok: false, err: 'Save failed: ' + e.message };
+  }
+},
+async deleteSchool(schoolName) {
+  try {
+    showLoading(true);
+    const gradesRef = collection(db, 'schools', schoolName, 'grades');
+    const gradesSnapshot = await getDocs(gradesRef);
+    
+    for (const gradeDoc of gradesSnapshot.docs) {
+      const studentsRef = collection(db, 'schools', schoolName, 'grades', gradeDoc.id, 'students');
+      const studentsSnapshot = await getDocs(studentsRef);
+      const deleteStudentPromises = studentsSnapshot.docs.map(studentDoc => 
+        deleteDoc(studentDoc.ref)
+      );
+      await Promise.all(deleteStudentPromises);
+      await deleteDoc(gradeDoc.ref);
+    }
+    
+    await deleteDoc(doc(db, 'schools', schoolName));
+    Cache.invalidate('schoolList', {});
+    Cache.invalidate('gradeList', { school: schoolName });
+    Cache.clearAll();
+    
+    return { ok: true };
+  } catch(e) {
+    console.error('Delete school error:', e);
+    return { ok: false, err: e.message };
+  } finally {
+    showLoading(false);
   }
 },
 
@@ -1386,7 +1448,6 @@ if(id === 'dashboard') {
   backBtn.onclick = () => show('dashboard');
 }
 State.screen = id;
-// ✅ REMOVED: SessionStore.save(State) - No state persistence on refresh
 document.querySelector('.content').scrollTop = 0;
 }
 
@@ -1463,9 +1524,32 @@ try {
     item.innerHTML = `
 <div class="list-icon">${school.name[0].toUpperCase()}</div>
 <div class="list-details"><h4>${school.name}</h4><p>${grades.length} grades • ${totalStudents} students</p></div>
+<button class="btn-delete-school" data-school="${school.name}" aria-label="Delete ${school.name}">🗑️</button>
 `;
     list.appendChild(item);
   }
+  // Add event listeners for delete buttons
+  document.querySelectorAll('.btn-delete-school').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const schoolName = btn.dataset.school;
+      confirmDialog(
+        `Delete "${schoolName}" and all its grades & students? This cannot be undone.`,
+        async () => {
+          const result = await Store.deleteSchool(schoolName);
+          if(result.ok) {
+            toast('School deleted ✓');
+            await renderSchoolList();
+            if(State.screen === 'select-school') {
+              await renderSchoolList();
+            }
+          } else {
+            toast(result.err || 'Delete failed', 'error');
+          }
+        }
+      );
+    };
+  });
 } catch(e) {
   toast('Failed to load schools', 'error');
 } finally {
@@ -1593,9 +1677,34 @@ try {
     item.innerHTML = `
 <div class="list-icon">${initials}</div>
 <div class="list-details"><h4>${student.name}</h4><p>${student.subjects?.length || 0} subjects</p></div>
+<button class="btn-delete-student-quick" data-student-id="${student.id}" data-student-name="${student.name}" aria-label="Delete ${student.name}">🗑️</button>
 `;
     list.appendChild(item);
   }
+  
+  // Add event listeners for quick delete buttons
+  document.querySelectorAll('.btn-delete-student-quick').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const studentId = btn.dataset.studentId;
+      const studentName = btn.dataset.studentName;
+      confirmDialog(
+        `Delete "${studentName}"? This cannot be undone.`,
+        async () => {
+          showLoading(true);
+          const result = await Store.deleteStudent(school, grade, studentId);
+          showLoading(false);
+          if(result.ok) {
+            toast('Student deleted ✓');
+            await renderStudentListView();
+          } else {
+            toast(result.err || 'Delete failed', 'error');
+          }
+        }
+      );
+    };
+  });
+  
 } catch(e) {
   toast('Failed to load students', 'error');
 } finally {
@@ -1791,7 +1900,7 @@ document.getElementById('backToStudentList').onclick = () => {
 State.studentList.selectedStudent = null;
 show('student-list');
 };
-// Delete Student
+// Delete Student (from detail view)
 document.getElementById('deleteStudentBtn').onclick = () => {
 const student = State.studentList.selectedStudent;
 if(!student) return;
@@ -1813,6 +1922,8 @@ confirmDialog(`Delete "${student.name}" from ${State.studentList.grade}? This ca
 document.getElementById('schoolList').onclick = async (e) => {
 const item = e.target.closest('.list-item[data-school]');
 if(item) {
+  // Don't trigger if delete button was clicked
+  if(e.target.closest('.btn-delete-school')) return;
   State.session.school = item.dataset.school;
   await renderGradeList(item.dataset.school);
   show('select-grade');
@@ -1911,7 +2022,7 @@ el.onkeydown = (e) => {
 };
 });
 
-// ✅ INIT: Always start fresh at Dashboard (No Session Restore)
+// ✅ INIT: Always start fresh at Dashboard
 (async () => {
 await renderSchoolSelects();
 setTimeout(() => toast('Ready to go ✓'), 500);
