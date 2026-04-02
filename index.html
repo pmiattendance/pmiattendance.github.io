@@ -3,1392 +3,491 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>PMI Attendance</title>
-<!-- PDF & ZIP Libraries -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<title>PMI Tools Dashboard</title>
 <style>
 /* ===== PREMIUM THEME - MATERIAL DESIGN INSPIRED ===== */
 :root {
---bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 60%, #f093fb 100%);
---surface: #ffffff;
---surface-alt: #f8fafc;
---text-primary: #1e293b;
---text-secondary: #64748b;
---border: #e2e8f0;
---border-focus: #818cf8;
---primary: #6366f1;
---primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
---primary-hover: #4f46e5;
---success: #10b981;
---success-gradient: linear-gradient(135deg, #10b981, #22c55e);
---danger: #ef4444;
---danger-gradient: linear-gradient(135deg, #ef4444, #f97316);
---warning: #f59e0b;
---shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
---shadow: 0 4px 14px rgba(0,0,0,0.08);
---shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
---shadow-glow: 0 0 0 3px rgba(99, 102, 241, 0.15);
---radius: 16px;
---radius-lg: 24px;
---radius-full: 9999px;
---transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
---transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
---elevation-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
---elevation-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
---elevation-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 60%, #f093fb 100%);
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --border-focus: #818cf8;
+  --primary: #6366f1;
+  --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+  --primary-hover: #4f46e5;
+  --success: #10b981;
+  --success-gradient: linear-gradient(135deg, #10b981, #22c55e);
+  --danger: #ef4444;
+  --danger-gradient: linear-gradient(135deg, #ef4444, #f97316);
+  --warning: #f59e0b;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 4px 14px rgba(0,0,0,0.08);
+  --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
+  --shadow-glow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  --radius: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --elevation-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  --elevation-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  --elevation-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+  -webkit-tap-highlight-color: transparent; 
+}
 body {
-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
-background: var(--bg-gradient);
-color: var(--text-primary);
-min-height: 100vh;
-line-height: 1.45;
--webkit-font-smoothing: antialiased;
--moz-osx-font-smoothing: grayscale;
-padding-bottom: env(safe-area-inset-bottom);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+  background: var(--bg-gradient);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding-bottom: env(safe-area-inset-bottom);
+  display: flex;
+  flex-direction: column;
 }
 #app {
-max-width: 480px;
-margin: 0 auto;
-min-height: 100vh;
-display: flex;
-flex-direction: column;
-background: var(--surface);
-position: relative;
-padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  position: relative;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  width: 100%;
 }
 @media (min-width: 768px) {
-#app {
-min-height: auto;
-margin: 24px auto;
-border-radius: var(--radius-lg);
-box-shadow: var(--shadow-lg);
-max-height: 92vh;
-overflow: hidden;
-}
-body {
-display: flex;
-align-items: center;
-justify-content: center;
-padding: 24px;
-}
+  #app {
+    min-height: auto;
+    margin: 24px auto;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    max-height: 92vh;
+    overflow: hidden;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
 }
 .header {
-padding: 20px 22px;
-background: var(--surface);
-border-bottom: 1px solid var(--border);
-display: flex;
-align-items: center;
-justify-content: center;
-position: relative;
-z-index: 20;
+  padding: 24px 22px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 20;
+  text-align: center;
 }
 .header h1 {
-font-size: 1.3rem;
-font-weight: 700;
-letter-spacing: -0.025em;
-background: var(--primary-gradient);
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-background-clip: text;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  line-height: 1.3;
 }
-.back-btn {
-position: absolute;
-left: 16px;
-background: var(--surface-alt);
-border: 1px solid var(--border);
-border-radius: var(--radius-full);
-width: 38px;
-height: 38px;
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 1.2rem;
-cursor: pointer;
-transition: var(--transition);
-color: var(--text-primary);
-box-shadow: var(--shadow-sm);
+.header-subtitle {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 4px;
+  letter-spacing: -0.01em;
 }
-.back-btn:hover { background: #f1f5f9; border-color: var(--border-focus); transform: scale(1.03); }
-.back-btn:active { transform: scale(0.97); box-shadow: none; }
-.back-btn.hidden { display: none; }
-.sliding-text-container {
-overflow: hidden; white-space: nowrap; background: var(--primary-gradient);
-padding: 10px 0; margin-bottom: 8px;
-}
-.sliding-text {
-display: inline-block; color: white; font-size: 1.1rem; font-weight: 700;
-letter-spacing: 0.15em; animation: slideText 15s linear infinite; padding-left: 100%;
-}
-@keyframes slideText { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 .footer-credit {
-position: fixed; bottom: 12px; right: 16px; font-size: 0.75rem; font-weight: 700;
-color: var(--text-secondary); background: rgba(255,255,255,0.9);
-padding: 6px 12px; border-radius: 8px; box-shadow: var(--shadow-sm); z-index: 100;
-bottom: calc(12px + env(safe-area-inset-bottom));
+  position: fixed; 
+  bottom: 12px; 
+  right: 16px; 
+  font-size: 0.75rem; 
+  font-weight: 700;
+  color: var(--text-secondary); 
+  background: rgba(255,255,255,0.92);
+  padding: 6px 14px; 
+  border-radius: 12px; 
+  box-shadow: var(--shadow-sm); 
+  z-index: 100;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  border: 1px solid var(--border);
+  backdrop-filter: blur(4px);
 }
 .content {
-flex: 1; padding: 22px 20px; overflow-y: auto;
--webkit-overflow-scrolling: touch; scroll-behavior: smooth;
+  flex: 1; 
+  padding: 16px 20px 32px; 
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; 
+  scroll-behavior: smooth;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 140px);
 }
-.screen { display: none; animation: slideUp 0.28s ease-out; }
-.screen.active { display: block; }
-@keyframes slideUp { from { opacity: 0.95; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-.dashboard { display: grid; gap: 16px; padding-top: 8px; }
+@media (min-width: 768px) {
+  .content {
+    min-height: auto;
+    padding: 24px 24px 40px;
+  }
+}
+.dashboard { 
+  display: grid; 
+  gap: 18px; 
+  width: 100%;
+  max-width: 400px;
+  padding: 8px 0;
+}
 .action-card {
-background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-padding: 24px 22px; cursor: pointer; transition: var(--transition-slow);
-display: flex; align-items: center; gap: 18px; position: relative; overflow: hidden; box-shadow: var(--shadow-sm);
+  background: var(--surface); 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius);
+  padding: 26px 24px; 
+  cursor: pointer; 
+  transition: var(--transition-slow);
+  display: flex; 
+  align-items: center; 
+  gap: 20px; 
+  position: relative; 
+  overflow: hidden; 
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
 }
 .action-card::before {
-content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-background: var(--primary-gradient); opacity: 0; transition: var(--transition);
+  content: ''; 
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  height: 3px;
+  background: var(--primary-gradient); 
+  opacity: 0; 
+  transition: var(--transition);
 }
-.action-card.add::before { background: linear-gradient(135deg, #f59e0b, #f97316); }
-.action-card.attend::before { background: var(--success-gradient); }
-.action-card.reports::before { background: linear-gradient(135deg, #3b82f6, #6366f1); }
-.action-card.danger::before { background: var(--danger-gradient); }
-.action-card:hover { border-color: var(--border-focus); box-shadow: var(--shadow); transform: translateY(-2px); }
-.action-card:hover::before { opacity: 1; }
-.action-card:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
+.action-card.attendance::before { 
+  background: var(--success-gradient); 
+}
+.action-card.feed-marks::before { 
+  background: linear-gradient(135deg, #3b82f6, #6366f1); 
+}
+.action-card:hover { 
+  border-color: var(--border-focus); 
+  box-shadow: var(--shadow); 
+  transform: translateY(-3px); 
+}
+.action-card:hover::before { 
+  opacity: 1; 
+}
+.action-card:active { 
+  transform: translateY(-1px); 
+  box-shadow: var(--shadow-sm); 
+}
 .action-icon {
-width: 56px; height: 56px; border-radius: 16px; display: flex;
-align-items: center; justify-content: center; font-size: 1.6rem; flex-shrink: 0; position: relative;
-}
-.action-card.add .action-icon {
-background: linear-gradient(135deg, #fef3c7, #fcd34d); color: #b45309;
-box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
-}
-.action-card.attend .action-icon {
-background: linear-gradient(135deg, #d1fae5, #6ee7b7); color: #065f46;
-box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-}
-.action-card.reports .action-icon {
-background: linear-gradient(135deg, #dbeafe, #93c5fd); color: #1e40af;
-box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
-}
-.action-card.danger .action-icon {
-background: linear-gradient(135deg, #fee2e2, #fca5a5); color: #b91c1c;
-box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
-}
-.action-content h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; color: var(--text-primary); }
-.action-content p { color: var(--text-secondary); font-size: 0.92rem; line-height: 1.4; }
-.list { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
-.list-item {
-background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-padding: 18px 20px; cursor: pointer; transition: var(--transition-slow);
-display: flex; align-items: center; gap: 16px; position: relative; box-shadow: var(--shadow-sm);
-}
-.list-item::after {
-content: '→'; position: absolute; right: 18px; color: var(--text-secondary);
-font-weight: 300; opacity: 0; transition: var(--transition);
-}
-.list-item:hover { border-color: var(--border-focus); box-shadow: var(--shadow); transform: translateX(3px); }
-.list-item:hover::after { opacity: 1; }
-.list-item:active { transform: translateX(1px) scale(0.998); background: var(--surface-alt); }
-.list-icon {
-width: 46px; height: 46px; border-radius: 13px;
-background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
-display: flex; align-items: center; justify-content: center;
-font-weight: 700; font-size: 1.1rem; color: var(--primary); flex-shrink: 0;
-box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
-}
-.list-item.add-school .list-icon { background: linear-gradient(135deg, #fef3c7, #fcd34d); color: #b45309; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2); }
-.list-item.add-grade .list-icon { background: linear-gradient(135deg, #d1fae5, #6ee7b7); color: #065f46; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2); }
-.list-item.add-student .list-icon { background: linear-gradient(135deg, #ede9fe, #c4b5fd); color: #7c3aed; box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2); }
-.list-item.student-list .list-icon { background: linear-gradient(135deg, #ffe4e6, #fda4af); color: #be123c; box-shadow: 0 2px 8px rgba(244, 63, 94, 0.2); }
-.list-details h4 { font-weight: 600; font-size: 1.02rem; color: var(--text-primary); margin-bottom: 3px; }
-.list-details p { color: var(--text-secondary); font-size: 0.87rem; }
-.list-empty { text-align: center; padding: 42px 24px; color: var(--text-secondary); }
-.list-empty-icon { font-size: 2.5rem; margin-bottom: 14px; opacity: 0.7; display: block; }
-.list-empty h4 { font-weight: 500; margin-bottom: 6px; color: var(--text-primary); }
-.list-empty .btn { margin-top: 18px; width: auto; padding: 11px 26px; }
-.form { display: flex; flex-direction: column; gap: 18px; margin-top: 6px; }
-.field { display: flex; flex-direction: column; gap: 7px; }
-.field label { font-size: 0.93rem; font-weight: 500; color: var(--text-primary); display: flex; align-items: center; gap: 5px; }
-.field label .req { color: var(--danger); font-weight: 600; }
-.field input, .field select {
-padding: 15px 17px; border: 1.5px solid var(--border); border-radius: 13px;
-font-size: 1rem; background: var(--surface-alt); transition: var(--transition); width: 100%;
-}
-.field input:focus, .field select:focus {
-outline: none; border-color: var(--border-focus); background: var(--surface); box-shadow: var(--shadow-glow);
-}
-.field input::placeholder { color: var(--text-secondary); opacity: 0.85; }
-.subjects-container {
-border: 1.5px solid var(--border); border-radius: 13px; background: var(--surface-alt);
-padding: 12px; max-height: 180px; overflow-y: auto;
-}
-.subject-checkbox {
-display: flex; align-items: center; gap: 10px; padding: 8px 10px;
-border-radius: 8px; cursor: pointer; transition: var(--transition);
-}
-.subject-checkbox:hover { background: rgba(99, 102, 241, 0.08); }
-.subject-checkbox input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
-.subject-checkbox label { font-size: 0.95rem; color: var(--text-primary); cursor: pointer; margin: 0; }
-.form-actions { display: flex; gap: 12px; padding-top: 6px; margin-top: 4px; border-top: 1px solid var(--border); }
-.btn {
-padding: 14px 22px; border: none; border-radius: 13px; font-weight: 500; font-size: 0.96rem;
-cursor: pointer; transition: var(--transition); display: inline-flex;
-align-items: center; justify-content: center; gap: 6px; position: relative; overflow: hidden;
-}
-.btn::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.12); opacity: 0; transition: var(--transition); }
-.btn:active::after { opacity: 1; }
-.btn-primary {
-background: var(--primary-gradient); color: white; flex: 1;
-box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
-}
-.btn-primary:hover {
-background: linear-gradient(135deg, var(--primary-hover), #7c3aed);
-transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
-}
-.btn-primary:active { transform: translateY(1px); box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3); }
-.btn-secondary { background: var(--surface-alt); color: var(--text-primary); border: 1.5px solid var(--border); }
-.btn-secondary:hover { background: #f1f5f9; border-color: var(--border-focus); }
-.btn-success {
-background: var(--success-gradient); color: white; flex: 1; padding: 19px;
-font-size: 1.06rem; font-weight: 600; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
-}
-.btn-success:hover {
-background: linear-gradient(135deg, #059669, #16a34a);
-transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
-}
-.btn-success:active { transform: translateY(1px); }
-.btn-danger {
-background: var(--danger-gradient); color: white; flex: 1; padding: 19px;
-font-size: 1.06rem; font-weight: 600; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
-}
-.btn-danger:hover {
-background: linear-gradient(135deg, #dc2626, #ea580c);
-transform: translateY(-1px); box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45);
-}
-.btn-danger:active { transform: translateY(1px); }
-.btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-.btn-loading { position: relative; pointer-events: none; }
-.btn-loading::after {
-content: ''; position: absolute; width: 18px; height: 18px;
-border: 2px solid rgba(255,255,255,0.3); border-top-color: white;
-border-radius: 50%; animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.attendance-card {
-background: var(--surface); border-radius: var(--radius-lg); padding: 32px 26px;
-text-align: center; box-shadow: var(--shadow-lg); margin: 14px 0 22px;
-border: 1px solid var(--border); position: relative; overflow: hidden;
-}
-.attendance-card::before {
-content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
-background: var(--primary-gradient);
-}
-.student-avatar {
-width: 78px; height: 78px; border-radius: 50%; background: var(--primary-gradient);
-color: white; display: flex; align-items: center; justify-content: center;
-font-size: 1.7rem; font-weight: 700; margin: 0 auto 16px;
-box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4); border: 4px solid var(--surface);
-}
-.student-name { font-size: 1.35rem; font-weight: 700; margin-bottom: 5px; color: var(--text-primary); letter-spacing: -0.02em; }
-.student-meta { color: var(--text-secondary); font-size: 0.94rem; margin-bottom: 26px; }
-.attendance-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.progress { margin: 16px 0 20px; }
-.progress-bar { height: 7px; background: var(--surface-alt); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
-.progress-fill { height: 100%; background: var(--primary-gradient); border-radius: 10px; transition: width 0.3s ease; box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3); }
-.progress-text { text-align: center; color: var(--text-secondary); font-size: 0.89rem; margin-bottom: 9px; font-weight: 500; }
-#toastContainer {
-position: fixed; top: 20px; right: 20px; z-index: 2000;
-display: flex; flex-direction: column; gap: 10px; max-width: 320px;
-}
-.toast {
-background: var(--surface); border-left: 4px solid var(--primary); border-radius: 12px;
-padding: 14px 18px; box-shadow: var(--elevation-3); display: flex;
-align-items: center; gap: 12px; animation: slideInToast 0.3s ease, fadeOutToast 0.3s ease 2.7s forwards; min-width: 280px;
-}
-.toast.success { border-left-color: var(--success); }
-.toast.error { border-left-color: var(--danger); }
-.toast.warning { border-left-color: var(--warning); }
-.toast-icon { font-size: 1.3rem; font-weight: 700; }
-.toast.success .toast-icon { color: var(--success); }
-.toast.error .toast-icon { color: var(--danger); }
-.toast.warning .toast-icon { color: var(--warning); }
-.toast-message { font-size: 0.93rem; color: var(--text-primary); flex: 1; }
-@keyframes slideInToast { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes fadeOutToast { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100px); } }
-.dialog-overlay {
-position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-display: flex; align-items: center; justify-content: center; z-index: 3000; animation: fadeIn 0.2s ease;
-}
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.dialog {
-background: var(--surface); border-radius: var(--radius-lg); padding: 24px;
-max-width: 360px; width: 90%; box-shadow: var(--elevation-3); text-align: center;
-}
-.dialog h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
-.dialog p { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 20px; }
-.dialog-actions { display: flex; gap: 12px; }
-.dialog-actions .btn { flex: 1; }
-.dialog input {
-width: 100%; padding: 12px 16px; border: 1.5px solid var(--border);
-border-radius: 10px; font-size: 1rem; margin-bottom: 16px;
-}
-.dialog input:focus {
-outline: none; border-color: var(--border-focus); box-shadow: var(--shadow-glow);
-}
-.student-detail-card {
-background: var(--surface); border-radius: var(--radius-lg); padding: 28px 24px;
-box-shadow: var(--shadow-lg); margin: 14px 0 22px; border: 1px solid var(--border);
-}
-.student-detail-card .student-avatar { width: 88px; height: 88px; font-size: 1.9rem; margin-bottom: 18px; }
-.student-detail-card .student-name { font-size: 1.45rem; margin-bottom: 8px; }
-.student-detail-card .student-meta { font-size: 0.98rem; margin-bottom: 20px; }
-.student-detail-card .student-subjects { background: var(--surface-alt); border-radius: 12px; padding: 16px; margin-bottom: 24px; }
-.student-detail-card .student-subjects h4 { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px; font-weight: 500; }
-.subject-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-.subject-tag { background: var(--primary-gradient); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 500; }
-.summary-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.92rem; }
-.summary-table th { background: var(--surface-alt); padding: 12px 10px; text-align: left; font-weight: 600; color: var(--text-primary); border-bottom: 2px solid var(--border); }
-.summary-table td { padding: 12px 10px; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
-.summary-table tr:hover { background: rgba(99, 102, 241, 0.04); }
-.summary-ratio { font-weight: 600; color: var(--primary); }
-.summary-percent { font-size: 0.85rem; color: var(--text-secondary); }
-.alert {
-padding: 13px 18px; border-radius: 13px; margin-bottom: 16px; font-size: 0.93rem;
-font-weight: 500; display: flex; align-items: center; gap: 9px;
-animation: slideIn 0.22s ease; box-shadow: var(--shadow); border-left: 4px solid;
-}
-@keyframes slideIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-.alert.success { background: #f0fdf4; color: #166534; border-left-color: var(--success); }
-.alert.error { background: #fef2f2; color: #991b1b; border-left-color: var(--danger); }
-.whatsapp {
-background: linear-gradient(135deg, #25D366, #128C7E); border-radius: var(--radius);
-padding: 20px 22px; color: white; text-align: center; margin-top: 18px;
-box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
-}
-.whatsapp h3 { font-size: 1.12rem; font-weight: 600; margin-bottom: 9px; display: flex; align-items: center; justify-content: center; gap: 7px; }
-.whatsapp-preview {
-background: rgba(255,255,255,0.14); border-radius: 11px; padding: 13px 15px;
-margin: 11px 0; font-family: ui-monospace, SFMono-Regular, monospace;
-font-size: 0.83rem; line-height: 1.5; text-align: left; white-space: pre-wrap;
-max-height: 170px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.2);
-}
-.whatsapp-btn {
-background: white; color: #075E54; font-weight: 700; width: 100%;
-margin-top: 9px; padding: 14px 20px; border-radius: 13px; border: none;
-cursor: pointer; font-size: 0.97rem; transition: var(--transition);
-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-}
-.whatsapp-btn:hover { background: #f8f9fa; transform: translateY(-1px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
-.whatsapp-btn:active { transform: translateY(1px); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-.complete-header { text-align: center; padding: 26px 0 18px; }
-.complete-icon {
-width: 72px; height: 72px; border-radius: 50%; background: var(--success-gradient);
-color: white; display: flex; align-items: center; justify-content: center;
-font-size: 2rem; font-weight: 700; margin: 0 auto 14px;
-box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45);
-}
-.complete-title { font-size: 1.35rem; font-weight: 700; margin-bottom: 5px; color: var(--text-primary); }
-.complete-subtitle { color: var(--text-secondary); font-size: 0.94rem; }
-.hidden { display: none !important; }
-.text-center { text-align: center; }
-.mt-4 { margin-top: 16px; }
-.mb-4 { margin-bottom: 16px; }
-.text-muted { color: var(--text-secondary); }
-.text-sm { font-size: 0.89rem; }
-.font-medium { font-weight: 500; }
-.font-semibold { font-weight: 600; }
-.loading-overlay {
-position: fixed; inset: 0; background: rgba(255,255,255,0.9);
-display: flex; align-items: center; justify-content: center; z-index: 1000;
-}
-.loading-spinner {
-width: 40px; height: 40px; border: 3px solid var(--border);
-border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite;
-}
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-background: linear-gradient(180deg, var(--primary), var(--primary-hover));
-border-radius: 10px;
-}
-@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.85; transform: scale(0.98); } }
-.pulse { animation: pulse 1.8s infinite; }
-@media (max-width: 480px) {
-.header { padding: 18px 18px; } .content { padding: 18px 16px; }
-.action-card { padding: 22px 20px; } .attendance-card { padding: 28px 22px; }
-.btn { padding: 13px 20px; }
-.footer-credit { bottom: calc(8px + env(safe-area-inset-bottom)); right: 12px; font-size: 0.68rem; }
-#toastContainer { top: 12px; right: 12px; }
-}
-.btn-delete-school, .btn-delete-student-quick {
-  opacity: 0; transition: var(--transition); width: 32px; height: 32px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 8px !important; padding: 0 !important; flex-shrink: 0;
-}
-.list-item:hover .btn-delete-school, .list-item:hover .btn-delete-student-quick { opacity: 1; }
-.btn-delete-school:hover, .btn-delete-student-quick:hover {
-  transform: scale(1.05); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
-}
-.btn-delete-school:active, .btn-delete-student-quick:active { transform: scale(0.95); }
-@media (max-width: 480px) { .btn-delete-school, .btn-delete-student-quick { opacity: 1; } }
-
-/* PDF Preview Styles */
-.pdf-preview {
-  background: var(--surface-alt);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin: 16px 0;
-  font-family: 'Courier New', monospace;
-  font-size: 0.8rem;
-  max-height: 200px;
-  overflow-y: auto;
-  border: 1px solid var(--border);
-}
-.pdf-preview h4 {
-  margin: 0 0 8px 0;
-  color: var(--primary);
-  font-weight: 600;
-}
-.pdf-preview .header {
-  text-align: center;
-  border-bottom: 2px solid var(--border);
-  padding-bottom: 8px;
-  margin-bottom: 12px;
-}
-.pdf-preview .row {
+  width: 60px; 
+  height: 60px; 
+  border-radius: 18px; 
   display: flex;
-  justify-content: space-between;
-  padding: 4px 0;
-  border-bottom: 1px dashed var(--border);
+  align-items: center; 
+  justify-content: center; 
+  font-size: 1.8rem; 
+  flex-shrink: 0; 
+  position: relative;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
 }
-.pdf-preview .row:last-child { border-bottom: none; }
-.pdf-preview .label { font-weight: 500; color: var(--text-primary); }
-.pdf-preview .value { color: var(--text-secondary); }
-.pdf-preview .bar {
-  height: 6px;
-  background: var(--surface);
-  border-radius: 3px;
-  margin-top: 4px;
+.action-card.attendance .action-icon {
+  background: linear-gradient(135deg, #d1fae5, #6ee7b7); 
+  color: #065f46;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+}
+.action-card.feed-marks .action-icon {
+  background: linear-gradient(135deg, #dbeafe, #93c5fd); 
+  color: #1e40af;
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
+}
+.action-content h3 { 
+  font-size: 1.25rem; 
+  font-weight: 700; 
+  margin-bottom: 6px; 
+  color: var(--text-primary); 
+  letter-spacing: -0.01em;
+}
+.action-content p { 
+  color: var(--text-secondary); 
+  font-size: 0.95rem; 
+  line-height: 1.45; 
+  font-weight: 500;
+}
+.btn {
+  padding: 16px 24px; 
+  border: none; 
+  border-radius: 14px; 
+  font-weight: 600; 
+  font-size: 1.02rem;
+  cursor: pointer; 
+  transition: var(--transition); 
+  display: inline-flex;
+  align-items: center; 
+  justify-content: center; 
+  gap: 8px; 
+  position: relative; 
   overflow: hidden;
+  text-decoration: none;
+  width: 100%;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
 }
-.pdf-preview .bar-fill {
-  height: 100%;
+.btn::after { 
+  content: ''; 
+  position: absolute; 
+  inset: 0; 
+  background: rgba(255,255,255,0.12); 
+  opacity: 0; 
+  transition: var(--transition); 
+}
+.btn:active::after { 
+  opacity: 1; 
+}
+.btn-attendance {
+  background: var(--success-gradient); 
+  color: white;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+.btn-attendance:hover {
+  background: linear-gradient(135deg, #059669, #16a34a);
+  transform: translateY(-2px); 
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.55);
+}
+.btn-attendance:active { 
+  transform: translateY(0); 
+}
+.btn-feed-marks {
+  background: linear-gradient(135deg, #3b82f6, #6366f1); 
+  color: white;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+.btn-feed-marks:hover {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  transform: translateY(-2px); 
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.55);
+}
+.btn-feed-marks:active { 
+  transform: translateY(0); 
+}
+.sliding-text-container {
+  overflow: hidden; 
+  white-space: nowrap; 
   background: var(--primary-gradient);
-  border-radius: 3px;
-  transition: width 0.3s ease;
+  padding: 8px 0; 
+  margin: 16px 0 20px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+}
+.sliding-text {
+  display: inline-block; 
+  color: white; 
+  font-size: 1.05rem; 
+  font-weight: 700;
+  letter-spacing: 0.18em; 
+  animation: slideText 18s linear infinite; 
+  padding-left: 100%;
+  text-transform: uppercase;
+}
+@keyframes slideText { 
+  0% { transform: translateX(0); } 
+  100% { transform: translateX(-100%); } 
+}
+.hidden { display: none !important; }
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+  .header { padding: 20px 16px 12px; }
+  .header h1 { font-size: 1.4rem; }
+  .header-subtitle { font-size: 1.1rem; }
+  .content { padding: 12px 16px 28px; }
+  .action-card { padding: 22px 20px; }
+  .action-icon { width: 54px; height: 54px; font-size: 1.6rem; }
+  .action-content h3 { font-size: 1.15rem; }
+  .action-content p { font-size: 0.92rem; }
+  .footer-credit { 
+    bottom: calc(8px + env(safe-area-inset-bottom)); 
+    right: 12px; 
+    font-size: 0.7rem; 
+    padding: 5px 10px;
+  }
+  .dashboard { gap: 14px; }
+  .sliding-text-container { margin: 12px 0 16px; padding: 7px 0; }
+  .sliding-text { font-size: 0.95rem; letter-spacing: 0.15em; }
+}
+
+/* Animation for page load */
+@keyframes fadeInUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+.content {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+.action-card {
+  animation: fadeInUp 0.3s ease-out forwards;
+  animation-delay: 0.1s;
+}
+.action-card:nth-child(2) {
+  animation-delay: 0.2s;
 }
 </style>
 </head>
 <body>
 <div id="app">
-<div id="loadingOverlay" class="loading-overlay hidden"><div class="loading-spinner"></div></div>
-<div id="toastContainer"></div>
-<header class="header">
-<button id="backBtn" class="back-btn hidden" aria-label="Go back">←</button>
-<h1>Pravin More Institute</h1>
-</header>
-<div class="footer-credit">MADE BY BHAVESH PAWAR</div>
-<main class="content">
-<!-- DASHBOARD -->
-<section id="screen-dashboard" class="screen active">
-<div class="sliding-text-container"><div class="sliding-text">PRAVIN MORE INSTITUTE</div></div>
-<div class="dashboard">
-<div class="action-card add" id="btnAdd" role="button" tabindex="0">
-<div class="action-icon">✏️</div><div class="action-content"><h3>Add</h3><p>Schools, grades & students</p></div>
-</div>
-<div class="action-card attend" id="btnStart" role="button" tabindex="0">
-<div class="action-icon">✅</div><div class="action-content"><h3>Attendance</h3><p>Mark today's attendance</p></div>
-</div>
-<div class="action-card reports" id="btnReports" role="button" tabindex="0">
-<div class="action-icon">📊</div><div class="action-content"><h3>Reports</h3><p>View & download summaries</p></div>
-</div>
-<div class="action-card danger" id="btnDeleteData" role="button" tabindex="0">
-<div class="action-icon">🗑️</div><div class="action-content"><h3>Delete Data</h3><p>Clear all attendance records</p></div>
-</div>
-</div>
-</section>
-
-<!-- ADD MENU -->
-<section id="screen-add-menu" class="screen">
-<div class="list">
-<div class="list-item add-school" id="btnAddSchool" role="button" tabindex="0"><div class="list-icon">🏫</div><div class="list-details"><h4>School</h4><p>Create a new school</p></div></div>
-<div class="list-item add-grade" id="btnAddGrade" role="button" tabindex="0"><div class="list-icon">📚</div><div class="list-details"><h4>Grade</h4><p>Add grade to school</p></div></div>
-<div class="list-item add-student" id="btnAddStudent" role="button" tabindex="0"><div class="list-icon">👤</div><div class="list-details"><h4>Student</h4><p>Enroll a student</p></div></div>
-<div class="list-item student-list" id="btnStudentList" role="button" tabindex="0"><div class="list-icon">📋</div><div class="list-details"><h4>Student List</h4><p>View & manage students</p></div></div>
-</div>
-</section>
-
-<!-- ADD SCHOOL -->
-<section id="screen-add-school" class="screen">
-<form id="formSchool" class="form">
-<div class="field"><label>School Name <span class="req">*</span></label><input type="text" id="inputSchool" placeholder="" required autocomplete="organization"></div>
-<div class="form-actions"><button type="button" class="btn btn-secondary" id="cancelSchool">Cancel</button><button type="submit" class="btn btn-primary" id="saveSchoolBtn">Save School</button></div>
-</form>
-</section>
-
-<!-- ADD GRADE -->
-<section id="screen-add-grade" class="screen">
-<form id="formGrade" class="form">
-<div class="field"><label>Select School <span class="req">*</span></label><select id="selectGradeSchool" required><option value="">Choose...</option></select></div>
-<div class="field"><label>Grade Name <span class="req">*</span></label><input type="text" id="inputGrade" placeholder="e.g., 9th, 10th" required autocomplete="off"></div>
-<div class="form-actions"><button type="button" class="btn btn-secondary" id="cancelGrade">Cancel</button><button type="submit" class="btn btn-primary" id="saveGradeBtn">Save Grade</button></div>
-</form>
-</section>
-
-<!-- ADD STUDENT -->
-<section id="screen-add-student" class="screen">
-<form id="formStudent" class="form">
-<div class="field"><label>School <span class="req">*</span></label><select id="selectStudentSchool" required><option value="">Choose...</option></select></div>
-<div class="field"><label>Grade <span class="req">*</span></label><select id="selectStudentGrade" required disabled><option value="">Select school first</option></select></div>
-<div class="field"><label>Student Name <span class="req">*</span></label><input type="text" id="inputStudent" placeholder="Full name" required autocomplete="name"></div>
-<div class="field"><label>Subjects <span class="req">*</span></label><div class="subjects-container" id="subjectsContainer"></div><p class="text-sm text-muted">Select one or more subjects this student is enrolled in</p></div>
-<div class="form-actions"><button type="button" class="btn btn-secondary" id="cancelStudent">Cancel</button><button type="submit" class="btn btn-primary" id="saveStudentBtn">Enroll Student</button></div>
-</form>
-</section>
-
-<!-- STUDENT LIST -->
-<section id="screen-student-list" class="screen">
-<p class="text-muted mb-4 font-medium">Filter students</p>
-<div class="form">
-<div class="field"><label>Select School <span class="req">*</span></label><select id="filterSchool" required><option value="">Choose a school...</option></select></div>
-<div class="field"><label>Select Grade <span class="req">*</span></label><select id="filterGrade" required disabled><option value="">Select school first</option></select></div>
-</div>
-<div id="studentListView" class="list mt-4"></div>
-<div id="noStudents" class="list-empty hidden"><span class="list-empty-icon">👤</span><h4>No students found</h4><p class="text-sm">Select school and grade to view students</p></div>
-</section>
-
-<!-- STUDENT DETAIL -->
-<section id="screen-student-detail" class="screen">
-<div class="student-detail-card">
-<div class="student-avatar" id="detailAvatar">A</div>
-<div class="student-name" id="detailName">Student Name</div>
-<div class="student-meta" id="detailMeta">School • Grade</div>
-<div class="student-subjects"><h4>ENROLLED SUBJECTS</h4><div class="subject-tags" id="detailSubjects"></div></div>
-<div class="form-actions">
-<button type="button" class="btn btn-secondary" id="backToStudentList">Back</button>
-<button type="button" class="btn btn-danger" id="deleteStudentBtn">Delete Student</button>
-</div>
-</div>
-</section>
-
-<!-- REPORTS SCREEN -->
-<section id="screen-reports" class="screen">
-  <p class="text-muted mb-4 font-medium">Generate Attendance Reports</p>
-  <div class="form">
-    <div class="field"><label>Select School</label>
-      <select id="reportSchool" required>
-        <option value="__ALL__">🌐 All Schools</option>
-        <option value="">Choose a school...</option>
-      </select>
-    </div>
-    <div class="field"><label>Select Grade</label>
-      <select id="reportGrade" required disabled>
-        <option value="__ALL__">📚 All Grades</option>
-        <option value="">Select school first</option>
-      </select>
-    </div>
-    <div class="field"><label>Subject (Optional)</label>
-      <select id="reportSubject">
-        <option value="">All Subjects</option>
-        <option value="Maths">Maths</option>
-        <option value="Biology">Biology</option>
-        <option value="Physics">Physics</option>
-        <option value="Chemistry">Chemistry</option>
-        <option value="Language">Language</option>
-        <option value="Literature">Literature</option>
-        <option value="Geography">Geography</option>
-        <option value="History">History</option>
-        <option value="French">French</option>
-      </select>
-    </div>
-  </div>
-  <div class="form-actions mt-4">
-    <button type="button" class="btn btn-primary" id="btnGenerateReport">🔍 Generate Report</button>
+  <header class="header">
+    <h1>Pravin More's Institute</h1>
+    <div class="header-subtitle">PMI Tools Dashboard</div>
+  </header>
+  
+  <div class="sliding-text-container">
+    <div class="sliding-text">PRAVIN MORE INSTITUTE</div>
   </div>
   
-  <!-- PDF Preview -->
-  <div id="pdfPreview" class="pdf-preview hidden">
-    <h4>📄 PDF Preview</h4>
-    <div id="previewContent"></div>
-  </div>
-  
-  <div id="reportResults" class="mt-4 hidden">
-    <div class="student-detail-card">
-      <h4 class="font-semibold mb-2" id="reportTitle">Attendance Summary</h4>
-      <p class="text-sm text-muted mb-4" id="reportSubtitle"></p>
-      <div style="overflow-x: auto;">
-        <table class="summary-table">
-          <thead><tr><th>Student</th><th>Subject</th><th>Present / Total</th><th>Attendance %</th></tr></thead>
-          <tbody id="reportTableBody"></tbody>
-        </table>
-      </div>
-      <div class="form-actions mt-4">
-        <button type="button" class="btn btn-secondary" id="btnDownloadSingle" style="flex:1" disabled>📄 Download PDF</button>
-        <button type="button" class="btn btn-primary" id="btnDownloadZIP" style="flex:1" disabled>📦 Download ZIP</button>
-      </div>
-    </div>
-  </div>
-  <div id="noReportData" class="list-empty hidden"><span class="list-empty-icon">📭</span><h4>No attendance data found</h4><p class="text-sm">Mark some attendance first to see reports</p></div>
-</section>
-
-<!-- SELECT SCHOOL -->
-<section id="screen-select-school" class="screen">
-<p class="text-muted mb-4 font-medium">Select a school</p>
-<div id="schoolList" class="list"></div>
-<div id="noSchools" class="list-empty hidden"><span class="list-empty-icon">🏫</span><h4>No schools yet</h4><p class="text-sm">Add your first school to get started</p><button class="btn btn-primary" id="addSchoolFromEmpty">Add School</button></div>
-</section>
-
-<!-- SELECT GRADE -->
-<section id="screen-select-grade" class="screen">
-<p class="text-muted mb-2">For:</p><p class="font-semibold mb-4" id="selectedSchool" style="font-size: 1.1rem;"></p>
-<p class="text-muted mb-4 font-medium">Select a grade</p>
-<div id="gradeList" class="list"></div>
-<div id="noGrades" class="list-empty hidden"><span class="list-empty-icon">📚</span><h4>No grades in this school</h4><p class="text-sm">Add grades to start marking attendance</p><button class="btn btn-primary" id="addGradeFromEmpty">Add Grade</button></div>
-</section>
-
-<!-- SELECT SUBJECT -->
-<section id="screen-select-subject" class="screen">
-<p class="text-muted mb-2">For:</p><p class="font-semibold mb-1" id="selectedSchoolSub" style="font-size: 1.1rem;"></p>
-<p class="font-medium mb-4" id="selectedGradeSub" style="color: var(--primary);"></p>
-<p class="text-muted mb-4 font-medium">Select a subject</p>
-<select id="selectAttendanceSubject" class="field" style="padding: 15px 17px; border: 1.5px solid var(--border); border-radius: 13px; font-size: 1rem; background: var(--surface-alt);"><option value="">Loading subjects...</option></select>
-<div class="form-actions mt-4"><button type="button" class="btn btn-secondary" id="backToGrade">Back</button><button type="button" class="btn btn-primary" id="startAttendanceWithSubject">Start Attendance</button></div>
-</section>
-
-<!-- ATTENDANCE -->
-<section id="screen-attendance" class="screen">
-<div class="progress"><div class="progress-text"><span id="currentNum">1</span> of <span id="totalNum">0</span></div><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div></div>
-<div class="attendance-card">
-<div class="student-avatar" id="avatar">A</div>
-<div class="student-name" id="sName">Student Name</div>
-<div class="student-meta" id="sMeta">School • Grade • Subject</div>
-<div class="attendance-actions"><button class="btn btn-danger" id="btnAbsent">Absent</button><button class="btn btn-success" id="btnPresent">Present</button></div>
-</div>
-</section>
-
-<!-- COMPLETE -->
-<section id="screen-complete" class="screen">
-<div class="complete-header"><div class="complete-icon">✓</div><h2 class="complete-title">Session Complete</h2><p class="complete-subtitle" id="completeSummary">All students marked</p></div>
-<div class="whatsapp"><h3>📱 Share Report</h3><div class="whatsapp-preview" id="waPreview"></div><a href="#" id="waLink" class="whatsapp-btn" target="_blank" rel="noopener">Open WhatsApp</a></div>
-<div class="form-actions mt-4"><button class="btn btn-secondary" id="btnNew" style="flex:1">New Session</button><button class="btn btn-primary" id="btnHome" style="flex:1">Home</button></div>
-</section>
-</main>
-
-<!-- Confirm Delete Dialog -->
-<div id="confirmDialog" class="dialog-overlay hidden">
-<div class="dialog"><h3>⚠️ Delete?</h3><p id="confirmMessage">Are you sure you want to delete this?</p><div class="dialog-actions"><button class="btn btn-secondary" id="confirmCancel">Cancel</button><button class="btn btn-danger" id="confirmDelete">Delete</button></div></div>
-</div>
-
-<!-- Password Dialog for Bulk Delete -->
-<div id="passwordDialog" class="dialog-overlay hidden">
-<div class="dialog">
-  <h3>🔐 Confirm Delete</h3>
-  <p>Enter password to delete all attendance </p>
-  <input type="password" id="deletePassword" placeholder="Enter password" autocomplete="off">
-  <div class="dialog-actions">
-    <button class="btn btn-secondary" id="passwordCancel">Cancel</button>
-    <button class="btn btn-danger" id="passwordConfirm">Delete All</button>
-  </div>
-</div>
-</div>
-
-<!-- Firebase SDK -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { getFirestore, collection, doc, getDoc, setDoc, getDocs, query, where, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCD9OsuMsCipDIxne_x3t41UW-waZD3LFQ",
-  authDomain: "pmiattendance-4841a.firebaseapp.com",
-  projectId: "pmiattendance-4841a",
-  storageBucket: "pmiattendance-4841a.firebasestorage.app",
-  messagingSenderId: "424810497641",
-  appId: "1:424810497641:web:2daacbac6ccce231a1c4f8"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const AVAILABLE_SUBJECTS = ['Maths','Biology','Physics','Chemistry','Language','Literature','Geography','History','French'];
-
-// ===== Cache System =====
-const Cache = {
-  prefix: 'attendflow_cache_', ttl: 1000*60*30,
-  key(type,params){ 
-    const paramStr = params ? JSON.stringify(params) : 'empty';
-    return this.prefix+type+'_'+paramStr.replace(/[^a-zA-Z0-9]/g,'_'); 
-  },
-  get(type,params){ try{const k=this.key(type,params),c=localStorage.getItem(k);if(!c)return null;const{data,timestamp}=JSON.parse(c);if(Date.now()-timestamp>this.ttl){localStorage.removeItem(k);return null;}return data;}catch{return null;}},
-  set(type,params,data){try{localStorage.setItem(this.key(type,params),JSON.stringify({data,timestamp:Date.now()}));}catch(e){console.warn('Cache save failed:',e);}},
-  invalidate(type,params){const k=this.key(type,params);localStorage.removeItem(k);if(type==='students'){localStorage.removeItem(this.key('gradeList',{school:params?.school}));localStorage.removeItem(this.key('schoolList',{}));}},
-  clearAll(){Object.keys(localStorage).forEach(k=>{if(k.startsWith(this.prefix))localStorage.removeItem(k);});}
-};
-
-const Store = {
-  today(){return new Date().toISOString().split('T')[0];},
-  fmt(d){if(!d)return'';const[y,m,dd]=d.split('-');return`${dd}/${m}/${y}`;},
-  async getSchools(){const c=Cache.get('schoolList',{});if(c)return c;try{const q=query(collection(db,'schools')),s=await getDocs(q),r=s.docs.map(d=>({id:d.id,...d.data()}));Cache.set('schoolList',{},r);return r;}catch(e){console.error('Get schools error:',e);return Cache.get('schoolList',{})||[];}},
-  async addSchool(name){const n=name.trim();if(n.length<2)return{ok:false,err:'Name too short'};try{const ref=doc(db,'schools',n);if((await getDoc(ref)).exists())return{ok:false,err:'Already exists'};await setDoc(ref,{name:n,created:new Date().toISOString()});Cache.invalidate('schoolList',{});return{ok:true};}catch(e){console.error('Add school error:',e);return{ok:false,err:'Save failed: '+e.message};}},
-  async deleteSchool(schoolName){try{showLoading(true);const gRef=collection(db,'schools',schoolName,'grades'),gSnap=await getDocs(gRef);for(const gd of gSnap.docs){const sRef=collection(db,'schools',schoolName,'grades',gd.id,'students'),sSnap=await getDocs(sRef);await Promise.all(sSnap.docs.map(d=>deleteDoc(d.ref)));await deleteDoc(gd.ref);}await deleteDoc(doc(db,'schools',schoolName));Cache.invalidate('schoolList',{});Cache.invalidate('gradeList',{school:schoolName});Cache.clearAll();return{ok:true};}catch(e){console.error('Delete school error:',e);return{ok:false,err:e.message};}finally{showLoading(false);}},
-  async getGrades(schoolName){const c=Cache.get('gradeList',{school:schoolName});if(c)return c;try{const q=query(collection(db,'schools',schoolName,'grades')),s=await getDocs(q),r=s.docs.map(d=>({id:d.id,...d.data()}));Cache.set('gradeList',{school:schoolName},r);return r;}catch(e){console.error('Get grades error:',e);return Cache.get('gradeList',{school:schoolName})||[];}},
-  async addGrade(schoolName,gradeName){const g=gradeName.trim();if(!g)return{ok:false,err:'Grade required'};try{const ref=doc(db,'schools',schoolName,'grades',g);if((await getDoc(ref)).exists())return{ok:false,err:'Grade exists'};await setDoc(ref,{name:g,school:schoolName,created:new Date().toISOString()});Cache.invalidate('gradeList',{school:schoolName});Cache.invalidate('schoolList',{});return{ok:true};}catch(e){console.error('Add grade error:',e);return{ok:false,err:'Save failed: '+e.message};}},
-  async getStudents(schoolName,gradeName){const c=Cache.get('students',{school:schoolName,grade:gradeName});if(c)return c;try{const q=query(collection(db,'schools',schoolName,'grades',gradeName,'students')),s=await getDocs(q),r=s.docs.map(d=>({id:d.id,...d.data()}));Cache.set('students',{school:schoolName,grade:gradeName},r);return r;}catch(e){console.error('Get students error:',e);return Cache.get('students',{school:schoolName,grade:gradeName})||[];}},
-  async addStudent(schoolName,gradeName,name,subjects){const n=name.trim();if(n.length<2)return{ok:false,err:'Name too short'};if(!subjects||subjects.length===0)return{ok:false,err:'Select at least one subject'};try{const sRef=collection(db,'schools',schoolName,'grades',gradeName,'students'),q=query(sRef,where('name','==',n)),snap=await getDocs(q);if(!snap.empty)return{ok:false,err:'Already enrolled'};const newRef=doc(sRef);await setDoc(newRef,{name:n,subjects:subjects,added:new Date().toISOString()});Cache.invalidate('students',{school:schoolName,grade:gradeName});Cache.invalidate('gradeList',{school:schoolName});Cache.invalidate('schoolList',{});return{ok:true,id:newRef.id};}catch(e){console.error('Add student error:',e);return{ok:false,err:'Save failed: '+e.message};}},
-  async deleteStudent(schoolName,gradeName,studentId){try{await deleteDoc(doc(db,'schools',schoolName,'grades',gradeName,'students',studentId));Cache.invalidate('students',{school:schoolName,grade:gradeName});Cache.invalidate('gradeList',{school:schoolName});Cache.invalidate('schoolList',{});return{ok:true};}catch(e){console.error('Delete student error:',e);return{ok:false,err:e.message};}},
-  
-  // ✅ FIXED: saveAttendanceRecord with proper subjectStats update
-  async saveAttendanceRecord(school,grade,subject,student,status){
-    try{
-      const logId = `${Store.today()}_${subject.replace(/\s+/g,'_')}_${student.id}`;
-      const logRef = doc(db, 'schools', school, 'grades', grade, 'attendanceLogs', logId);
-      await setDoc(logRef, {
-        date: Store.today(),
-        subject,
-        studentId: student.id,
-        studentName: student.name,
-        status,
-        timestamp: new Date().toISOString()
-      });
+  <main class="content">
+    <div class="dashboard">
+      <a href="https://pmiattendance.github.io/attendance/attendance" class="action-card attendance" role="button" tabindex="0">
+        <div class="action-icon">📋</div>
+        <div class="action-content">
+          <h3>Attendance</h3>
+          <p>Mark and track student attendance</p>
+        </div>
+      </a>
       
-      // Update subjectStats for reports
-      const statsRef = doc(db, 'schools', school, 'grades', grade, 'students', student.id, 'subjectStats', subject);
-      const snap = await getDoc(statsRef);
+      <a href="https://pmiattendance.github.io/attendance/marks" class="action-card feed-marks" role="button" tabindex="0">
+        <div class="action-icon">✏️</div>
+        <div class="action-content">
+          <h3>Feed Marks</h3>
+          <p>Enter and manage student marks</p>
+        </div>
+      </a>
+    </div>
+  </main>
+  
+  <div class="footer-credit">Created by Bhavesh Pawar</div>
+</div>
+
+<script>
+// Enhanced mobile touch interactions
+document.addEventListener('DOMContentLoaded', () => {
+  // Add ripple effect to buttons on click
+  document.querySelectorAll('.action-card, .btn').forEach(element => {
+    element.addEventListener('click', function(e) {
+      // Create ripple element
+      const ripple = document.createElement('span');
+      ripple.classList.add('ripple');
       
-      if(snap.exists()){
-        const d = snap.data();
-        await setDoc(statsRef, {
-          totalLectures: (d.totalLectures || 0) + 1,
-          presentCount: status === 'present' ? (d.presentCount || 0) + 1 : (d.presentCount || 0),
-          lastUpdated: new Date().toISOString()
-        });
-      } else {
-        await setDoc(statsRef, {
-          totalLectures: 1,
-          presentCount: status === 'present' ? 1 : 0,
-          lastUpdated: new Date().toISOString()
-        });
-      }
-      return { ok: true };
-    }catch(e){console.error('Save attendance error:',e);return{ok:false,err:e.message};}
-  },
-  
-  async getStudentSummary(school,grade,studentId){
-    try{
-      const snap=await getDocs(collection(db,'schools',school,'grades',grade,'students',studentId,'subjectStats'));
-      const sum={};
-      snap.docs.forEach(d=>{sum[d.id]=d.data();});
-      return{ok:true,sum};
-    }catch(e){console.error('Get summary error:',e);return{ok:false,err:e.message};}
-  },
-  
-  async deleteStudentAttendance(school,grade,studentId,subject=null){
-    try{
-      showLoading(true);
-      let q=query(collection(db,'schools',school,'grades',grade,'attendanceLogs'),where('studentId','==',studentId));
-      if(subject)q=query(q,where('subject','==',subject));
-      const logs=await getDocs(q);
-      await Promise.all(logs.docs.map(d=>deleteDoc(d.ref)));
-      if(subject){
-        await deleteDoc(doc(db,'schools',school,'grades',grade,'students',studentId,'subjectStats',subject));
-      }else{
-        const stats=await getDocs(collection(db,'schools',school,'grades',grade,'students',studentId,'subjectStats'));
-        await Promise.all(stats.docs.map(d=>deleteDoc(d.ref)));
-      }
-      Cache.invalidate('students',{school,grade});
-      return{ok:true};
-    }catch(e){console.error('Delete attendance error:',e);return{ok:false,err:e.message};}
-    finally{showLoading(false);}
-  },
-  
-  async deleteAllAttendanceData(password){
-    if(password !== 'PMI') return {ok:false, err:'Invalid password'};
-    try{
-      showLoading(true);
-      const schools = await Store.getSchools();
-      let totalDeleted = 0;
-      for(const school of schools){
-        const grades = await Store.getGrades(school.name);
-        for(const grade of grades){
-          const logsRef = collection(db, 'schools', school.name, 'grades', grade.name, 'attendanceLogs');
-          const logsSnap = await getDocs(logsRef);
-          const batch = writeBatch(db);
-          logsSnap.docs.forEach(docRef => batch.delete(docRef.ref));
-          await batch.commit();
-          totalDeleted += logsSnap.size;
-          const students = await Store.getStudents(school.name, grade.name);
-          for(const student of students){
-            const statsRef = collection(db, 'schools', school.name, 'grades', grade.name, 'students', student.id, 'subjectStats');
-            const statsSnap = await getDocs(statsRef);
-            const statsBatch = writeBatch(db);
-            statsSnap.docs.forEach(docRef => statsBatch.delete(docRef.ref));
-            await statsBatch.commit();
-          }
-        }
-      }
-      Cache.clearAll();
-      return {ok:true, count:totalDeleted};
-    }catch(e){
-      console.error('Delete all attendance error:',e);
-      return{ok:false,err:e.message};
-    }finally{
-      showLoading(false);
-    }
-  },
-  
-  async getGradeReport(school,grade,subjectFilter=null){
-    try{
-      console.log('🔍 Generating report for:', { school, grade, subjectFilter });
-      let report=[];
-      if(school === '__ALL__'){
-        const allSchools = await Store.getSchools();
-        for(const s of allSchools){
-          if(grade === '__ALL__'){
-            const allGrades = await Store.getGrades(s.name);
-            for(const g of allGrades){
-              const gradeReport = await this._getSingleGradeReport(s.name, g.name, subjectFilter);
-              report = report.concat(gradeReport);
-            }
-          } else {
-            const schoolReport = await this._getSingleGradeReport(s.name, grade, subjectFilter);
-            report = report.concat(schoolReport);
-          }
-        }
-      } else if(grade === '__ALL__'){
-        const allGrades = await Store.getGrades(school);
-        for(const g of allGrades){
-          const gradeReport = await this._getSingleGradeReport(school, g.name, subjectFilter);
-          report = report.concat(gradeReport);
-        }
-      } else {
-        report = await this._getSingleGradeReport(school, grade, subjectFilter);
-      }
-      console.log('📊 Report data:', report);
-      return{ok:true,report};
-    }catch(e){console.error('Get grade report error:',e);return{ok:false,err:e.message};}
-  },
-  
-  // ✅ FIXED: _getSingleGradeReport with proper subjectStats reading
-  async _getSingleGradeReport(school, grade, subjectFilter = null) {
-    try {
-      const students = await Store.getStudents(school, grade);
-      const report = [];
+      // Position ripple at click position
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size/2;
+      const y = e.clientY - rect.top - size/2;
       
-      for (const student of students) {
-        // Get subjectStats for this student
-        const statsSnap = await getDocs(
-          collection(db, 'schools', school, 'grades', grade, 'students', student.id, 'subjectStats')
-        );
-        
-        const subjects = subjectFilter ? [subjectFilter] : (student.subjects || []);
-        
-        for (const subj of subjects) {
-          // Find matching stat doc
-          const statDoc = statsSnap.docs.find(d => d.id === subj);
-          const stats = statDoc ? statDoc.data() : { totalLectures: 0, presentCount: 0 };
-          
-          // Include if has data OR if filtering by subject (show zero records too)
-          if (stats.totalLectures > 0 || (subjectFilter && subjectFilter === subj)) {
-            report.push({
-              studentName: student.name,
-              studentId: student.id,
-              subject: subj,
-              present: stats.presentCount || 0,
-              total: stats.totalLectures || 0,
-              percent: stats.totalLectures > 0 ? Math.round((stats.presentCount / stats.totalLectures) * 100) : 0,
-              schoolName: school,
-              gradeName: grade
-            });
-          }
-        }
-      }
-      return report;
-    } catch (e) {
-      console.error('_getSingleGradeReport error:', e);
-      return [];
-    }
-  }
-};
-
-// ===== State Object =====
-const State = {
-  screen: 'dashboard',
-  session: { school:null, grade:null, subject:null, students:[], idx:0, results:[] },
-  studentList: { school:null, grade:null, selectedStudent:null },
-  reports: { school:null, grade:null, subject:null, data:[] },  // ✅ Added 'data:' key
-  deletePending: null,
-  libsReady: false
-};
-
-function showLoading(show){document.getElementById('loadingOverlay').classList.toggle('hidden',!show);}
-
-function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('screen-'+id).classList.add('active');
-  const backBtn=document.getElementById('backBtn');
-  if(id==='dashboard'){backBtn.classList.add('hidden');}
-  else if(['add-school','add-grade','add-student','student-list','student-detail','reports'].includes(id)){backBtn.classList.remove('hidden');backBtn.onclick=()=>show('dashboard');}
-  else if(['select-school','select-grade','select-subject','attendance','complete'].includes(id)){backBtn.classList.remove('hidden');backBtn.onclick=()=>{const flow=['select-school','select-grade','select-subject','attendance','complete'],i=flow.indexOf(id);if(i>0){if(i===1)State.session.school=null;if(i===2)State.session.grade=null;if(i===3)State.session.subject=null;show(flow[i-1]);}else{show('dashboard');}};}
-  else if(id==='add-menu'){backBtn.classList.remove('hidden');backBtn.onclick=()=>show('dashboard');}
-  State.screen=id;document.querySelector('.content').scrollTop=0;
-}
-
-function toast(message,type='success'){
-  const container=document.getElementById('toastContainer'),t=document.createElement('div');
-  t.className='toast '+type;const icon=type==='success'?'✓':type==='error'?'✕':'⚠';
-  t.innerHTML='<span class="toast-icon">'+icon+'</span><span class="toast-message">'+message+'</span>';
-  container.appendChild(t);setTimeout(()=>t.remove(),3000);
-}
-
-function confirmDialog(message,onConfirm,onCancel){
-  document.getElementById('confirmMessage').textContent=message;
-  document.getElementById('confirmDialog').classList.remove('hidden');
-  const handleConfirm=()=>{document.getElementById('confirmDialog').classList.add('hidden');document.getElementById('confirmDelete').removeEventListener('click',handleConfirm);document.getElementById('confirmCancel').removeEventListener('click',handleCancel);onConfirm();};
-  const handleCancel=()=>{document.getElementById('confirmDialog').classList.add('hidden');document.getElementById('confirmDelete').removeEventListener('click',handleConfirm);document.getElementById('confirmCancel').removeEventListener('click',handleCancel);if(onCancel)onCancel();};
-  document.getElementById('confirmDelete').addEventListener('click',handleConfirm);
-  document.getElementById('confirmCancel').addEventListener('click',handleCancel);
-}
-
-async function renderSchoolSelects(includeAllOption=false){
-  showLoading(true);try{
-    const schools=await Store.getSchools();
-    const baseOpts = includeAllOption ? '<option value="__ALL__">🌐 All Schools</option><option value="">Choose a school...</option>' : '<option value="">Choose...</option>';
-    const opts = baseOpts + schools.map(s=>'<option value="'+s.name+'">'+s.name+'</option>').join('');
-    document.getElementById('selectGradeSchool').innerHTML = opts.replace('__ALL__','');
-    document.getElementById('selectStudentSchool').innerHTML = opts.replace('__ALL__','');
-    document.getElementById('filterSchool').innerHTML = '<option value="">Choose a school...</option>'+schools.map(s=>'<option value="'+s.name+'">'+s.name+'</option>').join('');
-    document.getElementById('reportSchool').innerHTML = opts;
-  }catch(e){toast('Failed to load schools','error');}finally{showLoading(false);}
-}
-
-async function renderSchoolList(){
-  showLoading(true);const list=document.getElementById('schoolList'),empty=document.getElementById('noSchools');
-  try{const schools=await Store.getSchools();if(!schools.length){list.classList.add('hidden');empty.classList.remove('hidden');return;}
-  empty.classList.add('hidden');list.classList.remove('hidden');list.innerHTML='';
-  for(const school of schools){const grades=await Store.getGrades(school.name);let totalStudents=0;for(const grade of grades){const students=await Store.getStudents(school.name,grade.name);totalStudents+=students.length;}
-  const item=document.createElement('div');item.className='list-item';item.dataset.school=school.name;
-  item.innerHTML='<div class="list-icon">'+school.name[0].toUpperCase()+'</div><div class="list-details"><h4>'+school.name+'</h4><p>'+grades.length+' grades • '+totalStudents+' students</p></div><button class="btn-delete-school" data-school="'+school.name+'" aria-label="Delete '+school.name+'">🗑️</button>';
-  list.appendChild(item);}
-  document.querySelectorAll('.btn-delete-school').forEach(btn=>{btn.onclick=(e)=>{e.stopPropagation();const schoolName=btn.dataset.school;confirmDialog('Delete "'+schoolName+'" and all its grades & students? This cannot be undone.',async()=>{const result=await Store.deleteSchool(schoolName);if(result.ok){toast('School deleted ✓');await renderSchoolList();if(State.screen==='select-school')await renderSchoolList();}else{toast(result.err||'Delete failed','error');}});};});
-  }catch(e){toast('Failed to load schools','error');}finally{showLoading(false);}
-}
-
-async function renderGradeList(school){
-  showLoading(true);const list=document.getElementById('gradeList'),empty=document.getElementById('noGrades');
-  document.getElementById('selectedSchool').textContent=school;
-  try{const grades=await Store.getGrades(school);if(!grades.length){list.classList.add('hidden');empty.classList.remove('hidden');return;}
-  empty.classList.add('hidden');list.classList.remove('hidden');list.innerHTML='';
-  for(const grade of grades){const students=await Store.getStudents(school,grade.name);const item=document.createElement('div');item.className='list-item';item.dataset.grade=grade.name;
-  item.innerHTML='<div class="list-icon">'+grade.name[0].toUpperCase()+'</div><div class="list-details"><h4>'+grade.name+'</h4><p>'+students.length+' students</p></div>';list.appendChild(item);}
-  }catch(e){toast('Failed to load grades','error');}finally{showLoading(false);}
-}
-
-function renderSubjectsCheckboxes(){const container=document.getElementById('subjectsContainer');container.innerHTML=AVAILABLE_SUBJECTS.map(subject=>'<div class="subject-checkbox"><input type="checkbox" id="subj_'+subject.replace(/\s+/g,'_')+'" value="'+subject+'"><label for="subj_'+subject.replace(/\s+/g,'_')+'">'+subject+'</label></div>').join('');}
-function getSelectedSubjects(){return Array.from(document.querySelectorAll('#subjectsContainer input[type="checkbox"]:checked')).map(cb=>cb.value);}
-function renderSubjectDropdown(){const select=document.getElementById('selectAttendanceSubject');select.innerHTML='<option value="">Select a subject...</option>'+AVAILABLE_SUBJECTS.map(subj=>'<option value="'+subj+'">'+subj+'</option>').join('');}
-
-function renderCard(){
-  const{students,idx,school,grade,subject}=State.session;
-  if(idx>=students.length){complete();return;}
-  const s=students[idx],initials=s.name.split(' ').map(n=>n.trim()[0]).filter(c=>c).slice(0,2).join('').toUpperCase()||'?';
-  document.getElementById('avatar').textContent=initials;
-  document.getElementById('sName').textContent=s.name;
-  document.getElementById('sMeta').textContent=school+' • '+grade+' • '+subject;
-  document.getElementById('currentNum').textContent=idx+1;
-  document.getElementById('totalNum').textContent=students.length;
-  const percent = students.length ? Math.round((idx / students.length) * 100) : 0;
-  document.getElementById('progressFill').style.width = percent + '%';
-}
-
-function makeReport(){const{school,grade,subject,results}=State.session,today=Store.fmt(Store.today()),present=results.filter(r=>r.status==='present').map(r=>'• '+r.name),absent=results.filter(r=>r.status==='absent').map(r=>'• '+r.name),msg='Attendance Report\n\n'+grade+' '+school+'\n\nSubject: '+subject+'\n\nDate: '+today+'\n\nPresent ('+present.length+')\n  '+(present.join('\n')||'• None')+'\n\nAbsent ('+absent.length+')\n  '+(absent.join('\n')||'• None')+'\n\nTotal: '+results.length+' students';
-document.getElementById('waPreview').textContent=msg;document.getElementById('waLink').href='https://api.whatsapp.com/send?text='+encodeURIComponent(msg);document.getElementById('completeSummary').textContent=present.length+' present • '+absent.length+' absent • '+results.length+' total';}
-
-async function renderStudentListView(){const{school,grade}=State.studentList,list=document.getElementById('studentListView'),empty=document.getElementById('noStudents');
-if(!school||!grade){list.classList.add('hidden');empty.classList.remove('hidden');empty.querySelector('p').textContent='Select school and grade to view students';return;}
-showLoading(true);try{const students=await Store.getStudents(school,grade);if(!students.length){list.classList.add('hidden');empty.classList.remove('hidden');empty.querySelector('p').textContent='No students in this grade';return;}
-empty.classList.add('hidden');list.classList.remove('hidden');list.innerHTML='';
-for(const student of students){const item=document.createElement('div');item.className='list-item';item.dataset.studentId=student.id;const initials=student.name.split(' ').map(n=>n.trim()[0]).filter(c=>c).slice(0,2).join('').toUpperCase()||'?';
-item.innerHTML='<div class="list-icon">'+initials+'</div><div class="list-details"><h4>'+student.name+'</h4><p>'+(student.subjects?.length||0)+' subjects</p></div><button class="btn-delete-student-quick" data-student-id="'+student.id+'" data-student-name="'+student.name+'" aria-label="Delete '+student.name+'">🗑️</button>';list.appendChild(item);}
-document.querySelectorAll('.btn-delete-student-quick').forEach(btn=>{btn.onclick=(e)=>{e.stopPropagation();const studentId=btn.dataset.studentId,studentName=btn.dataset.studentName;confirmDialog('Delete "'+studentName+'"? This cannot be undone.',async()=>{showLoading(true);const result=await Store.deleteStudent(school,grade,studentId);showLoading(false);if(result.ok){toast('Student deleted ✓');await renderStudentListView();}else{toast(result.err||'Delete failed','error');}});};});
-}catch(e){toast('Failed to load students','error');}finally{showLoading(false);}}
-
-function renderStudentDetail(student){const initials=student.name.split(' ').map(n=>n.trim()[0]).filter(c=>c).slice(0,2).join('').toUpperCase()||'?';
-document.getElementById('detailAvatar').textContent=initials;document.getElementById('detailName').textContent=student.name;document.getElementById('detailMeta').textContent=State.studentList.school+' • '+State.studentList.grade;
-const subjectsContainer=document.getElementById('detailSubjects');if(student.subjects&&student.subjects.length>0){subjectsContainer.innerHTML=student.subjects.map(subj=>'<span class="subject-tag">'+subj+'</span>').join('');}else{subjectsContainer.innerHTML='<span class="text-muted">No subjects enrolled</span>';}}
-
-function renderPDFPreview(reportData, school, grade, subject){
-  const preview = document.getElementById('pdfPreview');
-  const content = document.getElementById('previewContent');
-  if(!reportData || reportData.length === 0){
-    preview.classList.add('hidden');
-    return;
-  }
-  preview.classList.remove('hidden');
-  const byStudent = {};
-  reportData.forEach(row => {
-    if(!byStudent[row.studentName]) byStudent[row.studentName] = [];
-    byStudent[row.studentName].push(row);
-  });
-  let html = `<div class="header"><strong>Pravin More Institute</strong><br><small>Attendance Report</small></div>`;
-  html += `<div class="row"><span class="label">School:</span><span class="value">${school === '__ALL__' ? 'All Schools' : school}</span></div>`;
-  html += `<div class="row"><span class="label">Grade:</span><span class="value">${grade === '__ALL__' ? 'All Grades' : grade}</span></div>`;
-  html += `<div class="row"><span class="label">Subject:</span><span class="value">${subject || 'All Subjects'}</span></div>`;
-  html += `<div class="row"><span class="label">Generated:</span><span class="value">${new Date().toLocaleDateString()}</span></div>`;
-  html += `<hr style="margin:12px 0;border:0;border-top:1px solid var(--border)">`;
-  Object.entries(byStudent).forEach(([name, rows]) => {
-    html += `<div style="margin:12px 0"><strong>${name}</strong></div>`;
-    rows.forEach(row => {
-      html += `<div class="row"><span>${row.subject}</span><span>${row.present}/${row.total} (${row.percent}%)</span></div><div class="bar"><div class="bar-fill" style="width:${row.percent}%"></div></div>`;
+      ripple.style.width = ripple.style.height = `${size}px`;
+      ripple.style.left = `${x}px`;
+      ripple.style.top = `${y}px`;
+      
+      this.appendChild(ripple);
+      
+      // Remove ripple after animation
+      setTimeout(() => {
+        ripple.remove();
+      }, 600);
     });
   });
-  content.innerHTML = html;
-}
-
-// ✅ FIXED: renderReportTable with correct data key
-function renderReportTable(reportData,school,grade,subject){
-  const tbody=document.getElementById('reportTableBody');
-  tbody.innerHTML='';
-  if(!reportData||reportData.length===0){
-    document.getElementById('reportResults').classList.add('hidden');
-    document.getElementById('noReportData').classList.remove('hidden');
-    document.getElementById('pdfPreview').classList.add('hidden');
-    return;
-  }
-  document.getElementById('noReportData').classList.add('hidden');
-  document.getElementById('reportResults').classList.remove('hidden');
-  const schoolLabel = school === '__ALL__' ? 'All Schools' : school;
-  const gradeLabel = grade === '__ALL__' ? 'All Grades' : grade;
-  document.getElementById('reportTitle').textContent=subject?subject+' Attendance Report':'Attendance Summary Report';
-  document.getElementById('reportSubtitle').textContent=schoolLabel+' • '+gradeLabel+' • Generated: '+new Date().toLocaleDateString();
-  reportData.forEach(row=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML='<td><strong>'+row.studentName+'</strong></td><td>'+row.subject+'</td><td class="summary-ratio">'+row.present+' / '+row.total+'</td><td><span class="summary-percent">'+row.percent+'%</span></td>';
-    tbody.appendChild(tr);
-  });
-  renderPDFPreview(reportData, school, grade, subject);
-  const pdfBtn = document.getElementById('btnDownloadSingle');
-  const zipBtn = document.getElementById('btnDownloadZIP');
-  pdfBtn.disabled = !window.jspdf?.jsPDF;
-  zipBtn.disabled = !window.JSZip;
-  State.reports={school:school,grade:grade,subject:subject,data:reportData};  // ✅ FIXED
-}
-
-async function generateReportPDF(reportData,school,grade,subject){
-  if(!window.jspdf||!window.jspdf.jsPDF)throw new Error('PDF library not loaded.');
-  const{jsPDF}=window.jspdf,doc=new jsPDF();
-  doc.setFillColor(99,102,241);
-  doc.rect(0,0,210,35,'F');
-  doc.setTextColor(255,255,255);
-  doc.setFontSize(18);
-  doc.setFont('helvetica','bold');
-  doc.text('Pravin More Institute',105,18,null,null,'center');
-  doc.setFontSize(11);
-  doc.setFont('helvetica','normal');
-  doc.text('Attendance Report',105,26,null,null,'center');
-  doc.setTextColor(30,41,59);
-  doc.setFontSize(10);
-  const schoolLabel = school === '__ALL__' ? 'All Schools' : school;
-  const gradeLabel = grade === '__ALL__' ? 'All Grades' : grade;
-  const subjectLabel = subject || 'All Subjects';
-  doc.text('School: '+schoolLabel,20,50);
-  doc.text('Grade: '+gradeLabel,20,58);
-  doc.text('Subject: '+subjectLabel,20,66);
-  doc.text('Generated: '+new Date().toLocaleDateString(),20,74);
-  doc.setFontSize(9);
-  doc.setFont('helvetica','bold');
-  doc.setFillColor(241,245,249);
-  doc.rect(20,82,170,10,'F');
-  doc.setTextColor(30,41,59);
-  doc.text('Student',22,89);
-  doc.text('Subject',75,89);
-  doc.text('Present/Total',130,89);
-  doc.text('%',175,89);
-  let y=98;
-  reportData.forEach((row,i)=>{
-    if(y>265){doc.addPage();y=30;}
-    if(i%2===0){doc.setFillColor(248,250,252);doc.rect(20,y-6,170,8,'F');}
-    doc.setFont('helvetica','normal');
-    doc.setFontSize(8.5);
-    doc.text(row.studentName.substring(0,22),22,y);
-    doc.text(row.subject,75,y);
-    doc.text(row.present+'/'+row.total,130,y);
-    doc.text(row.percent+'%',175,y);
-    doc.setFillColor(221,235,255);
-    doc.rect(165,y-4,25,5,'F');
-    doc.setFillColor(99,102,241);
-    doc.rect(165,y-4,(row.percent*0.25),5,'F');
-    y+=10;
-  });
-  doc.setFontSize(7);
-  doc.setTextColor(150,150,150);
-  doc.text('Generated by PMI Attendance System',105,290,null,null,'center');
-  return doc.output('arraybuffer');
-}
-
-async function downloadReportZIP(){
-  if(!State.reports.data||State.reports.data.length===0){toast('No data to download','warning');return;}
-  if(!window.JSZip||!window.jspdf){toast('Export libraries loading...','warning');return;}
-  showLoading(true);toast('Preparing download...','success');
-  try{
-    const zip=new JSZip();
-    const{school,grade,subject,data}=State.reports;
-    
-    const tree={};
-    data.forEach(row=>{
-      const sName=row.schoolName||school;
-      const gName=row.gradeName||grade;
-      if(!tree[sName])tree[sName]={};
-      if(!tree[sName][gName])tree[sName][gName]={};
-      if(!tree[sName][gName][row.studentName])tree[sName][gName][row.studentName]=[];
-      tree[sName][gName][row.studentName].push(row);
+  
+  // Add keyboard navigation support
+  document.querySelectorAll('.action-card').forEach(card => {
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.click();
+      }
     });
-    
-    let totalFiles=0;
-    for(const[schoolName,grades] of Object.entries(tree)){
-      const safeSchool=schoolName.replace(/[^a-z0-9]/gi,'_').substring(0,30);
-      const schoolFolder=zip.folder(safeSchool);
-      
-      for(const[gradeName,students] of Object.entries(grades)){
-        const safeGrade=gradeName.replace(/[^a-z0-9]/gi,'_').substring(0,30);
-        const gradeFolder=schoolFolder.folder(safeGrade);
-        
-        for(const[studentName,rows] of Object.entries(students)){
-          const{jsPDF}=window.jspdf,doc=new jsPDF();
-          
-          doc.setFillColor(99,102,241);
-          doc.rect(0,0,210,30,'F');
-          doc.setTextColor(255,255,255);
-          doc.setFontSize(16);
-          doc.setFont('helvetica','bold');
-          doc.text('Pravin More Institute',105,16,null,null,'center');
-          doc.setFontSize(12);
-          doc.text('Attendance Summary',105,24,null,null,'center');
-          
-          doc.setTextColor(30,41,59);
-          doc.setFontSize(10);
-          doc.setFont('helvetica','normal');
-          doc.text('Student: '+studentName,20,45);
-          doc.text('School: '+schoolName,20,53);
-          doc.text('Grade: '+gradeName,20,61);
-          doc.text('Generated: '+new Date().toLocaleDateString(),20,69);
-          
-          doc.setFontSize(9);
-          doc.setFont('helvetica','bold');
-          doc.setFillColor(241,245,249);
-          doc.rect(20,80,170,10,'F');
-          doc.setTextColor(30,41,59);
-          doc.text('Subject',25,87);
-          doc.text('Present / Total',100,87);
-          doc.text('Attendance %',155,87);
-          
-          let y=95;
-          rows.forEach(row=>{
-            if(y>255){doc.addPage();y=30;}
-            doc.setFont('helvetica','normal');
-            doc.setFontSize(9);
-            doc.text(row.subject,25,y);
-            doc.text(row.present+' / '+row.total,100,y);
-            doc.text(row.percent+'%',155,y);
-            doc.setFillColor(221,235,255);
-            doc.rect(150,y-4,40,6,'F');
-            doc.setFillColor(99,102,241);
-            doc.rect(150,y-4,(row.percent*0.4),6,'F');
-            y+=12;
-          });
-          
-          doc.setFontSize(7);
-          doc.setTextColor(150,150,150);
-          doc.text('Generated by PMI Attendance System',105,285,null,null,'center');
-          
-          const safeStudent=studentName.replace(/[^a-z0-9]/gi,'_').substring(0,25);
-          gradeFolder.file(safeStudent+'.pdf',doc.output('arraybuffer'));
-          totalFiles++;
-        }
-      }
+  });
+  
+  // Prevent zoom on double-tap for mobile
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', function(event) {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
     }
-    
-    const content=await zip.generateAsync({type:'blob'});
-    const filename='PMI_Attendance_Report_'+Store.today()+'.zip';
-    saveAs(content,filename);
-    toast('Downloaded '+totalFiles+' student PDFs ✓','success');
-  }catch(e){console.error('Export error:',e);toast('Export failed: '+e.message,'error');}finally{showLoading(false);}
-}
-
-function showPasswordDialog(onConfirm){
-  document.getElementById('passwordDialog').classList.remove('hidden');
-  document.getElementById('deletePassword').value = '';
-  document.getElementById('deletePassword').focus();
-  const handleConfirm = () => {
-    const pwd = document.getElementById('deletePassword').value;
-    document.getElementById('passwordDialog').classList.add('hidden');
-    onConfirm(pwd);
-  };
-  const handleCancel = () => {
-    document.getElementById('passwordDialog').classList.add('hidden');
-  };
-  document.getElementById('passwordConfirm').onclick = handleConfirm;
-  document.getElementById('passwordCancel').onclick = handleCancel;
-  document.getElementById('deletePassword').onkeydown = (e) => {
-    if(e.key === 'Enter') handleConfirm();
-  };
-}
-
-// Event Handlers
-document.getElementById('btnAdd').onclick=()=>{show('add-menu');};
-document.getElementById('btnStart').onclick=async()=>{await renderSchoolList();show('select-school');};
-document.getElementById('btnReports').onclick=async()=>{await renderSchoolSelects(true);State.reports={school:null,grade:null,subject:null,data:[]};document.getElementById('reportGrade').innerHTML='<option value="__ALL__">📚 All Grades</option><option value="">Select school first</option>';document.getElementById('reportGrade').disabled=true;document.getElementById('reportResults').classList.add('hidden');document.getElementById('noReportData').classList.add('hidden');document.getElementById('pdfPreview').classList.add('hidden');show('reports');};
-
-document.getElementById('btnDeleteData').onclick = () => {
-  showPasswordDialog(async (password) => {
-    const result = await Store.deleteAllAttendanceData(password);
-    if(result.ok){toast('Deleted '+result.count+' records','success');}
-    else{toast(result.err||'Delete failed','error');}
-  });
-};
-
-document.getElementById('btnAddSchool').onclick=()=>show('add-school');
-document.getElementById('btnAddGrade').onclick=async()=>{await renderSchoolSelects();show('add-grade');};
-document.getElementById('btnAddStudent').onclick=async()=>{await renderSchoolSelects();renderSubjectsCheckboxes();show('add-student');};
-document.getElementById('btnStudentList').onclick=async()=>{await renderSchoolSelects();State.studentList={school:null,grade:null,selectedStudent:null};document.getElementById('filterGrade').innerHTML='<option value="">Select school first</option>';document.getElementById('filterGrade').disabled=true;show('student-list');};
-document.getElementById('cancelSchool').onclick=(e)=>{e.preventDefault();document.getElementById('formSchool').reset();show('dashboard');};
-document.getElementById('cancelGrade').onclick=(e)=>{e.preventDefault();document.getElementById('formGrade').reset();show('dashboard');};
-document.getElementById('cancelStudent').onclick=(e)=>{e.preventDefault();document.getElementById('formStudent').reset();const sel=document.getElementById('selectStudentGrade');sel.innerHTML='<option value="">Select school first</option>';sel.disabled=true;show('dashboard');};
-document.getElementById('formSchool').onsubmit=async(e)=>{e.preventDefault();const btn=document.getElementById('saveSchoolBtn');btn.classList.add('btn-loading');btn.disabled=true;const r=await Store.addSchool(document.getElementById('inputSchool').value);if(r.ok){toast('School saved');document.getElementById('formSchool').reset();await renderSchoolSelects();}else toast(r.err,'error');btn.classList.remove('btn-loading');btn.disabled=false;};
-document.getElementById('formGrade').onsubmit=async(e)=>{e.preventDefault();const school=document.getElementById('selectGradeSchool').value,grade=document.getElementById('inputGrade').value;if(!school||!grade){toast('Fill all fields','error');return;}const btn=document.getElementById('saveGradeBtn');btn.classList.add('btn-loading');btn.disabled=true;const r=await Store.addGrade(school,grade);if(r.ok){toast('Grade saved');document.getElementById('formGrade').reset();}else toast(r.err,'error');btn.classList.remove('btn-loading');btn.disabled=false;};
-document.getElementById('selectStudentSchool').onchange=async function(){const sel=document.getElementById('selectStudentGrade'),school=this.value;if(!school){sel.innerHTML='<option value="">Select school first</option>';sel.disabled=true;return;}sel.disabled=true;sel.innerHTML='<option value="">Loading...</option>';try{const grades=await Store.getGrades(school);if(!grades.length){sel.innerHTML='<option value="">No grades</option>';sel.disabled=true;return;}sel.innerHTML='<option value="">Select...</option>'+grades.map(g=>'<option value="'+g.name+'">'+g.name+'</option>').join('');sel.disabled=false;}catch(e){sel.innerHTML='<option value="">Error loading</option>';toast('Failed to load grades','error');}};
-document.getElementById('formStudent').onsubmit=async(e)=>{e.preventDefault();const school=document.getElementById('selectStudentSchool').value,grade=document.getElementById('selectStudentGrade').value,name=document.getElementById('inputStudent').value,subjects=getSelectedSubjects();if(!school||!grade||!name){toast('Fill all fields','error');return;}if(subjects.length===0){toast('Select at least one subject','warning');return;}const btn=document.getElementById('saveStudentBtn');btn.classList.add('btn-loading');btn.disabled=true;const r=await Store.addStudent(school,grade,name,subjects);if(r.ok){toast('Student enrolled');document.getElementById('inputStudent').value='';document.querySelectorAll('#subjectsContainer input[type="checkbox"]').forEach(cb=>cb.checked=false);}else toast(r.err,'error');btn.classList.remove('btn-loading');btn.disabled=false;};
-document.getElementById('filterSchool').onchange=async function(){const school=this.value;State.studentList.school=school;const gradeSel=document.getElementById('filterGrade');if(!school){gradeSel.innerHTML='<option value="">Select school first</option>';gradeSel.disabled=true;State.studentList.grade=null;renderStudentListView();return;}gradeSel.disabled=true;gradeSel.innerHTML='<option value="">Loading...</option>';try{const grades=await Store.getGrades(school);if(!grades.length){gradeSel.innerHTML='<option value="">No grades</option>';gradeSel.disabled=true;State.studentList.grade=null;renderStudentListView();return;}gradeSel.innerHTML='<option value="">Select a grade...</option>'+grades.map(g=>'<option value="'+g.name+'">'+g.name+'</option>').join('');gradeSel.disabled=false;State.studentList.grade=null;renderStudentListView();}catch(e){gradeSel.innerHTML='<option value="">Error loading</option>';toast('Failed to load grades','error');}};
-document.getElementById('filterGrade').onchange=async function(){const grade=this.value;State.studentList.grade=grade;await renderStudentListView();};
-document.getElementById('studentListView').onclick=async(e)=>{const item=e.target.closest('.list-item[data-student-id]');if(item&&!e.target.closest('.btn-delete-student-quick')){const studentId=item.dataset.studentId,students=await Store.getStudents(State.studentList.school,State.studentList.grade),student=students.find(s=>s.id===studentId);if(student){State.studentList.selectedStudent=student;renderStudentDetail(student);show('student-detail');}}};
-document.getElementById('backToStudentList').onclick=()=>{State.studentList.selectedStudent=null;show('student-list');};
-document.getElementById('deleteStudentBtn').onclick=()=>{const student=State.studentList.selectedStudent;if(!student)return;confirmDialog('Delete "'+student.name+'"?',async()=>{showLoading(true);const result=await Store.deleteStudent(State.studentList.school,State.studentList.grade,student.id);showLoading(false);if(result.ok){toast('Student deleted');State.studentList.selectedStudent=null;await renderStudentListView();show('student-list');}else{toast(result.err||'Delete failed','error');}});};
-
-document.getElementById('reportSchool').onchange=async function(){
-  const school=this.value;
-  State.reports.school=school;
-  const gradeSel=document.getElementById('reportGrade');
-  if(!school || school === '__ALL__'){
-    gradeSel.innerHTML = '<option value="__ALL__">📚 All Grades (All Schools)</option>';
-    gradeSel.value = '__ALL__';
-    gradeSel.disabled = false;
-    State.reports.grade = '__ALL__';
-    toast('All grades from all schools included','success');
-    return;
-  }
-  gradeSel.disabled=true;
-  gradeSel.innerHTML='<option value="">Loading...</option>';
-  try{
-    const grades=await Store.getGrades(school);
-    if(!grades.length){gradeSel.innerHTML='<option value="">No grades</option>';gradeSel.disabled=true;return;}
-    gradeSel.innerHTML='<option value="__ALL__">📚 All Grades</option><option value="">Select a grade...</option>'+grades.map(g=>'<option value="'+g.name+'">'+g.name+'</option>').join('');
-    gradeSel.disabled=false;
-    State.reports.grade = null;
-  }catch(e){gradeSel.innerHTML='<option value="">Error loading</option>';toast('Failed to load grades','error');}
-};
-
-// ✅ FIXED: btnGenerateReport with correct data key
-document.getElementById('btnGenerateReport').onclick=async()=>{
-  const school=document.getElementById('reportSchool').value,
-        grade=document.getElementById('reportGrade').value,
-        subject=document.getElementById('reportSubject').value||null;
-  if(!school || school === ''){toast('Select a school','warning');return;}
-  if(school !== '__ALL__' && (!grade || grade === '')){toast('Select a grade','warning');return;}
-  showLoading(true);
-  State.reports={school:school,grade:grade,subject:subject,data:[]};  // ✅ FIXED
-  const result=await Store.getGradeReport(school,grade,subject);
-  showLoading(false);
-  if(result.ok && result.report && result.report.length>0){
-    renderReportTable(result.report,school,grade,subject);
-    toast('Found '+result.report.length+' records','success');
-  }else{
-    document.getElementById('reportResults').classList.add('hidden');
-    document.getElementById('noReportData').classList.remove('hidden');
-    document.getElementById('pdfPreview').classList.add('hidden');
-    toast(result.err||'No attendance data found','warning');
-  }
-};
-
-document.getElementById('btnDownloadSingle').onclick=async()=>{
-  if(!State.reports.data||State.reports.data.length===0){toast('No data to download','warning');return;}
-  if(!window.jspdf){toast('PDF library loading...','warning');return;}
-  showLoading(true);
-  try{
-    const{school,grade,subject,data}=State.reports,
-          pdfBuffer=await generateReportPDF(data,school,grade,subject),
-          filename='PMI_Attendance_Report_'+Store.today()+'.pdf',
-          blob=new Blob([pdfBuffer],{type:'application/pdf'}),
-          url=URL.createObjectURL(blob),
-          a=document.createElement('a');
-    a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url);
-    toast('PDF downloaded','success');
-  }catch(e){console.error('PDF error:',e);toast('PDF failed: '+e.message,'error');}finally{showLoading(false);}
-};
-
-document.getElementById('btnDownloadZIP').onclick=downloadReportZIP;
-document.getElementById('schoolList').onclick=async(e)=>{const item=e.target.closest('.list-item[data-school]');if(item){if(e.target.closest('.btn-delete-school'))return;State.session.school=item.dataset.school;await renderGradeList(item.dataset.school);show('select-grade');}};
-document.getElementById('gradeList').onclick=async(e)=>{const item=e.target.closest('.list-item[data-grade]');if(item){State.session.grade=item.dataset.grade;document.getElementById('selectedSchoolSub').textContent=State.session.school;document.getElementById('selectedGradeSub').textContent='Grade: '+State.session.grade;renderSubjectDropdown();show('select-subject');}};
-document.getElementById('backToGrade').onclick=()=>{State.session.grade=null;show('select-grade');};
-document.getElementById('startAttendanceWithSubject').onclick=async()=>{const subject=document.getElementById('selectAttendanceSubject').value;if(!subject){toast('Please select a subject','warning');return;}State.session.subject=subject;await startAttendanceWithSubject();};
-
-async function startAttendanceWithSubject(){
-  const{school,grade,subject}=State.session;
-  showLoading(true);
-  try{
-    const allStudents=await Store.getStudents(school,grade),
-          filteredStudents=allStudents.filter(s=>s.subjects&&Array.isArray(s.subjects)&&s.subjects.includes(subject));
-    State.session={school:school,grade:grade,subject:subject,students:filteredStudents,idx:0,results:[]};
-    if(!filteredStudents.length){toast('No students found for '+subject,'warning');makeReport();show('complete');return;}
-    toast('Found '+filteredStudents.length+' student(s) for '+subject);
-    renderCard();
-    show('attendance');
-  }catch(e){toast('Failed to load students','error');}finally{showLoading(false);}
-}
-
-async function mark(status){
-  const{students,idx,school,grade,subject}=State.session;
-  if(idx>=students.length){complete();return;}
-  const student=students[idx];
-  await Store.saveAttendanceRecord(school,grade,subject,student,status);
-  State.session.results.push({name:student.name,status:status});
-  State.session.idx++;
-  setTimeout(()=>{if(State.session.idx>=students.length)complete();else renderCard();},140);
-}
-
-document.getElementById('btnPresent').onclick=()=>mark('present');
-document.getElementById('btnAbsent').onclick=()=>mark('absent');
-function complete(){makeReport();show('complete');}
-document.getElementById('btnNew').onclick=async()=>{await renderSchoolList();show('select-school');};
-document.getElementById('btnHome').onclick=()=>show('dashboard');
-document.getElementById('addSchoolFromEmpty').onclick=()=>show('add-school');
-document.getElementById('addGradeFromEmpty').onclick=async()=>{await renderSchoolSelects();show('add-grade');};
-document.onkeydown=(e)=>{
-  if(State.screen==='attendance'){
-    if(e.key==='ArrowRight'||e.key==='p'||e.key==='P'||e.key==='Enter'){e.preventDefault();mark('present');}
-    if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A'){e.preventDefault();mark('absent');}
-  }
-  if(e.key==='Escape'&&State.screen!=='dashboard'){e.preventDefault();document.getElementById('backBtn').click();}
-};
-document.querySelectorAll('[role="button"]').forEach(el=>{el.onkeydown=(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}};});
-
-async function waitForLibraries(){
-  return new Promise(resolve => {
-    const check = setInterval(() => {
-      if(window.JSZip && window.jspdf?.jsPDF){
-        clearInterval(check);
-        State.libsReady = true;
-        document.getElementById('btnDownloadSingle').disabled = false;
-        document.getElementById('btnDownloadZIP').disabled = false;
-        resolve();
+    lastTouchEnd = now;
+  }, false);
+  
+  // Smooth scroll behavior for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
       }
-    }, 100);
-    setTimeout(() => {clearInterval(check);resolve();}, 10000);
+    });
   });
-}
+  
+  // Add subtle animation on scroll for content
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+  
+  // Observe dashboard cards
+  document.querySelectorAll('.action-card').forEach(card => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(15px)';
+    card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+    observer.observe(card);
+  });
+});
 
-(async()=>{
-  await waitForLibraries();
-  await renderSchoolSelects(true);
-  setTimeout(()=>toast('Ready to go'),500);
-})();
+// Handle window resize for responsive adjustments
+window.addEventListener('resize', () => {
+  // Adjust footer position on orientation change
+  const footer = document.querySelector('.footer-credit');
+  if (window.innerWidth < 480) {
+    footer.style.fontSize = '0.7rem';
+    footer.style.padding = '5px 10px';
+  } else {
+    footer.style.fontSize = '0.75rem';
+    footer.style.padding = '6px 14px';
+  }
+});
 </script>
 </body>
 </html>
