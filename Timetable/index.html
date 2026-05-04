@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Timetable Manager</title>
+  <style>
+    :root {
+      --bg: #fff7ed;
+      --panel: #ffffff;
+      --ink: #172033;
+      --muted: #64748b;
+      --line: #dbe5f2;
+      --brand: #0ea5e9;
+      --brand-dark: #0369a1;
+      --accent: #f97316;
+      --violet: #7c3aed;
+      --green: #14b8a6;
+      --red: #ef4444;
+      --amber: #f59e0b;
+      --soft: #e0f2fe;
+      --shadow: 0 18px 44px rgba(15, 23, 42, 0.12);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(120deg, rgba(14, 165, 233, 0.18), transparent 34rem),
+        linear-gradient(280deg, rgba(249, 115, 22, 0.14), transparent 30rem),
+        linear-gradient(180deg, #f8fcff 0%, var(--bg) 100%);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      border-radius: var(--radius);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0;
+    }
+
+    .app-header {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(219, 229, 242, 0.92);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 30px rgba(22, 32, 51, 0.07);
+      backdrop-filter: blur(10px);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(1.35rem, 2.4vw, 2rem);
+      letter-spacing: 0;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 4px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .login-layout {
+      display: grid;
+      place-items: center;
+      min-height: calc(100vh - 56px);
+    }
+
+    .panel,
+    .login-card {
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(219, 229, 242, 0.92);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+    }
+
+    .login-card {
+      padding: 30px;
+      width: min(100%, 430px);
+      align-self: center;
+      border-top: 7px solid var(--accent);
+    }
+
+    .login-card h2 {
+      font-size: 1.8rem;
+      margin-bottom: 6px;
+    }
+
+    .login-head {
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: #344054;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      color: var(--ink);
+      background: #fbfdff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 18px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 10px 16px;
+      color: white;
+      background: linear-gradient(135deg, var(--brand), var(--violet));
+      font-weight: 800;
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, var(--brand-dark), #5b21b6);
+    }
+
+    .btn.secondary {
+      color: var(--ink);
+      background: #e0f2fe;
+      box-shadow: none;
+    }
+
+    .btn.danger {
+      background: var(--red);
+      box-shadow: none;
+    }
+
+    .btn.small {
+      min-height: 34px;
+      padding: 7px 10px;
+      font-size: 0.85rem;
+    }
+
+    .notice {
+      min-height: 22px;
+      margin-top: 12px;
+      color: var(--red);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 30;
+      display: none;
+      max-width: min(360px, calc(100% - 28px));
+      padding: 13px 15px;
+      color: white;
+      background: #162033;
+      border-radius: var(--radius);
+      box-shadow: 0 18px 40px rgba(22, 32, 51, 0.24);
+      font-weight: 800;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    .toast.success {
+      background: var(--green);
+    }
+
+    .toast.error {
+      background: var(--red);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(15, 23, 42, 0.42);
+    }
+
+    .modal-backdrop.show {
+      display: grid;
+    }
+
+    .modal {
+      width: min(100%, 420px);
+      padding: 20px;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+    }
+
+    .modal p {
+      color: var(--muted);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    .mobile-tabs {
+      position: sticky;
+      top: 0;
+      z-index: 9;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 16px;
+      padding: 7px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.09);
+      backdrop-filter: blur(10px);
+    }
+
+    .mobile-tab {
+      min-height: 42px;
+      padding: 9px 10px;
+      color: var(--muted);
+      background: #f8fbff;
+      border: 1px solid transparent;
+      box-shadow: none;
+      font-size: 0.88rem;
+      font-weight: 900;
+    }
+
+    .mobile-tab.active {
+      color: white;
+      background: linear-gradient(135deg, var(--brand), var(--violet));
+    }
+
+    .mobile-tab-section {
+      display: none;
+      min-width: 0;
+    }
+
+    .mobile-tab-section.active {
+      display: block;
+    }
+
+    .mobile-tab-section:not(.active) {
+      display: none !important;
+    }
+
+    .mobile-tab-section.active.stack {
+      display: grid;
+    }
+
+    .dashboard-grid {
+      display: block;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .mini-stat {
+      padding: 16px;
+      color: white;
+      background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 24px rgba(14, 165, 233, 0.18);
+    }
+
+    .mini-stat span {
+      display: block;
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 0.84rem;
+      margin-bottom: 6px;
+    }
+
+    .mini-stat strong {
+      font-size: 1.65rem;
+    }
+
+    .danger-zone {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      border-color: #fed7aa;
+      background: #fff7ed;
+      box-shadow: 0 10px 24px rgba(239, 68, 68, 0.08);
+    }
+
+    .panel-title,
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .toolbar {
+      align-items: end;
+      flex-wrap: wrap;
+    }
+
+    .toolbar .field {
+      min-width: min(100%, 280px);
+    }
+
+    .panel {
+      padding: 20px;
+    }
+
+    .panel h2 {
+      font-size: 1.22rem;
+    }
+
+    .panel h3 {
+      font-size: 1.05rem;
+    }
+
+    .stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .teacher-list,
+    .lecture-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 13px;
+      background: linear-gradient(180deg, #ffffff, #f8fbff);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .item strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .item span {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      color: #075985;
+      background: #ccfbf1;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .mobile-cards {
+      display: none;
+    }
+
+    .lecture-card {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 20px rgba(22, 32, 51, 0.06);
+    }
+
+    .lecture-card + .lecture-card {
+      margin-top: 10px;
+    }
+
+    .lecture-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .lecture-card-head strong {
+      display: block;
+      font-size: 1rem;
+    }
+
+    .lecture-time {
+      color: var(--brand-dark);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .detail {
+      padding: 10px;
+      background: #f8fbff;
+      border: 1px solid #e8eef8;
+      border-radius: var(--radius);
+    }
+
+    .detail span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .detail strong {
+      overflow-wrap: anywhere;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+      background: white;
+    }
+
+    th,
+    td {
+      padding: 13px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #344054;
+      background: #ecfeff;
+      font-size: 0.84rem;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .empty {
+      padding: 22px;
+      color: var(--muted);
+      text-align: center;
+      background: #f8fbff;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+    }
+
+    .teacher-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .login-layout,
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 620px) {
+      .shell {
+        width: min(100% - 14px, 1180px);
+        padding: 10px 0 18px;
+      }
+
+      .app-header,
+      .teacher-header,
+      .danger-zone {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .app-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        margin-bottom: 12px;
+      }
+
+      .app-header .btn,
+      .actions .btn,
+      .danger-zone .btn {
+        width: 100%;
+      }
+
+      .toast {
+        right: 7px;
+        bottom: 12px;
+      }
+
+      h1 {
+        font-size: 1.35rem;
+      }
+
+      .subtle {
+        font-size: 0.88rem;
+      }
+
+      .quick-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .mobile-tabs {
+        top: 86px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        padding: 6px;
+      }
+
+      .mobile-tab {
+        min-height: 38px;
+        padding: 8px 7px;
+        font-size: 0.82rem;
+      }
+
+      .mini-stat {
+        padding: 12px 10px;
+      }
+
+      .mini-stat strong {
+        font-size: 1.35rem;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .login-card,
+      .panel {
+        padding: 16px;
+      }
+
+      input,
+      select {
+        min-height: 48px;
+      }
+
+      .toolbar,
+      .panel-title,
+      .item,
+      .item-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .toolbar .field {
+        width: 100%;
+      }
+
+      .table-wrap {
+        display: none;
+      }
+
+      .mobile-cards {
+        display: block;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="app-header" id="appHeader">
+      <div>
+        <h1 id="pageTitle">Dashboard</h1>
+        <p class="status" id="syncStatus"></p>
+      </div>
+      <button class="btn secondary" id="logoutBtn" style="display: none;">Logout</button>
+    </header>
+
+    <section id="loginScreen" class="screen active">
+      <div class="login-layout">
+        <form class="login-card" id="loginForm">
+          <div class="login-head">
+            <h2>Teacher Timetable</h2>
+          </div>
+          <div class="field">
+            <label for="loginUsername">Username</label>
+            <input id="loginUsername" autocomplete="username" required />
+          </div>
+          <div class="field" style="margin-top: 14px;">
+            <label for="loginPassword">Password</label>
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+          </div>
+          <div class="actions">
+            <button class="btn" type="submit">Login</button>
+          </div>
+          <div class="notice" id="loginNotice"></div>
+        </form>
+      </div>
+    </section>
+
+    <section id="adminScreen" class="screen">
+      <div class="quick-grid" id="adminStats" style="margin-bottom: 18px;"></div>
+      <nav class="mobile-tabs" aria-label="Admin sections">
+        <button class="mobile-tab active" type="button" data-mobile-tab="teachersPanel">Teachers</button>
+        <button class="mobile-tab" type="button" data-mobile-tab="lecturePanel">Add</button>
+        <button class="mobile-tab" type="button" data-mobile-tab="lecturesPanel">Lectures</button>
+        <button class="mobile-tab" type="button" data-mobile-tab="controlsPanel">Clear</button>
+      </nav>
+      <div class="panel danger-zone mobile-tab-section" id="controlsPanel">
+        <div>
+          <h2>Timetable Controls</h2>
+        </div>
+        <button class="btn danger" id="deleteAllBtn" type="button">Delete All Timetables</button>
+      </div>
+      <div class="dashboard-grid">
+        <aside class="stack mobile-tab-section active" id="teachersPanel">
+          <form class="panel" id="teacherForm">
+            <div class="panel-title">
+              <div>
+                <h2>Add Teacher</h2>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="field full">
+                <label for="teacherName">Teacher Name</label>
+                <input id="teacherName" required />
+              </div>
+              <div class="field full">
+                <label for="teacherSubject">Teacher Subject</label>
+                <input id="teacherSubject" required />
+              </div>
+              <div class="field">
+                <label for="teacherUsername">Username</label>
+                <input id="teacherUsername" required />
+              </div>
+              <div class="field">
+                <label for="teacherPassword">Password</label>
+                <input id="teacherPassword" type="password" required />
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn" type="submit">Create Account</button>
+            </div>
+            <div class="notice" id="teacherNotice"></div>
+          </form>
+
+          <div class="panel">
+            <div class="panel-title">
+              <h3>Teachers</h3>
+            </div>
+            <div id="teacherList" class="teacher-list"></div>
+          </div>
+        </aside>
+
+        <section class="stack mobile-tab-section" id="lecturePanel">
+          <form class="panel" id="lectureForm">
+            <div class="panel-title">
+              <div>
+                <h2>Add Lecture</h2>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="lectureTeacher">Teacher</label>
+                <select id="lectureTeacher" required></select>
+              </div>
+              <div class="field">
+                <label for="lectureDay">Day</label>
+                <select id="lectureDay" required>
+                  <option>Monday</option>
+                  <option>Tuesday</option>
+                  <option>Wednesday</option>
+                  <option>Thursday</option>
+                  <option>Friday</option>
+                  <option>Saturday</option>
+                  <option>Sunday</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="lectureStartTime">Starting Time</label>
+                <input id="lectureStartTime" type="time" required />
+              </div>
+              <div class="field">
+                <label for="lectureEndTime">Ending Time</label>
+                <input id="lectureEndTime" type="time" required />
+              </div>
+              <div class="field">
+                <label for="lectureSubject">Subject</label>
+                <input id="lectureSubject" readonly required />
+              </div>
+              <div class="field">
+                <label for="lectureSchool">School</label>
+                <input id="lectureSchool" required />
+              </div>
+              <div class="field">
+                <label for="lectureGrade">Grade</label>
+                <input id="lectureGrade" required />
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn" type="submit">Add Lecture</button>
+            </div>
+            <div class="notice" id="lectureNotice"></div>
+          </form>
+        </section>
+
+        <section class="stack mobile-tab-section" id="lecturesPanel">
+          <div class="panel">
+            <div class="toolbar">
+              <div>
+                <h2>Lectures</h2>
+              </div>
+              <div class="field">
+                <label for="lectureSearch">Search</label>
+                <input id="lectureSearch" />
+              </div>
+            </div>
+            <div id="adminTable"></div>
+          </div>
+        </section>
+
+      </div>
+    </section>
+
+    <section id="teacherScreen" class="screen">
+      <div class="teacher-header">
+        <div>
+          <h2 id="teacherWelcome">My Timetable</h2>
+          <p class="subtle" id="teacherMeta"></p>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">
+          <div>
+            <h2>Assigned Lectures</h2>
+          </div>
+        </div>
+        <div id="teacherTable"></div>
+      </div>
+    </section>
+  </main>
+  <div class="toast" id="toast"></div>
+  <div class="modal-backdrop" id="confirmModal">
+    <div class="modal">
+      <h2 id="confirmTitle">Confirm</h2>
+      <p id="confirmMessage"></p>
+      <div class="actions">
+        <button class="btn danger" id="confirmYes" type="button">Delete</button>
+        <button class="btn secondary" id="confirmNo" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+    import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+    
+    const STORAGE_KEY = "teacherTimetableDataV1";
+    const CLOUD_SYNC_ENABLED = true;
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyAgTwRN7JcVKnCd7HmcnQS0RxNmQ91ZXjg",
+      authDomain: "teachertimetable-9a90d.firebaseapp.com",
+      projectId: "teachertimetable-9a90d",
+      storageBucket: "teachertimetable-9a90d.firebasestorage.app",
+      messagingSenderId: "968665767069",
+      appId: "1:968665767069:web:0d92dde0edc725fc284874"
+    };
+    
+    const state = loadLocalState();
+    
+    let cloudDoc = null;
+    let savingCloud = false;
+    let handlers = {
+      onCloudChange: () => {},
+      onStatus: () => {},
+      onToast: () => {}
+    };
+    
+    function initCloud(nextHandlers = {}) {
+      handlers = { ...handlers, ...nextHandlers };
+    
+      if (!CLOUD_SYNC_ENABLED) {
+        handlers.onStatus("Local save");
+        return;
+      }
+    
+      try {
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        cloudDoc = doc(db, "teacherTimetable", "main");
+        handlers.onStatus("Connecting...");
+    
+        onSnapshot(
+          cloudDoc,
+          snapshot => {
+            if (!snapshot.exists()) {
+              saveState();
+              handlers.onStatus("Synced");
+              return;
+            }
+    
+            const data = snapshot.data();
+            state.teachers = Array.isArray(data.teachers) ? data.teachers.map(normalizeTeacher) : [];
+            state.lectures = Array.isArray(data.lectures) ? data.lectures.map(normalizeLecture) : [];
+            saveLocalState();
+            handlers.onStatus("Synced");
+            handlers.onCloudChange();
+          },
+          () => {
+            handlers.onStatus("Offline");
+            handlers.onToast("Firebase is not reachable. Using local data.", "error");
+          }
+        );
+      } catch {
+        handlers.onStatus("Offline");
+      }
+    }
+    
+    function saveState() {
+      saveLocalState();
+      if (!cloudDoc || savingCloud) return;
+    
+      savingCloud = true;
+      handlers.onStatus("Saving...");
+    
+      setDoc(cloudDoc, {
+        teachers: state.teachers.map(({ password, ...teacher }) => teacher),
+        lectures: state.lectures,
+        updatedAt: new Date().toISOString()
+      })
+        .then(() => handlers.onStatus("Synced"))
+        .catch(() => {
+          handlers.onStatus("Offline");
+          handlers.onToast("Saved on this device. Firebase sync failed.", "error");
+        })
+        .finally(() => {
+          savingCloud = false;
+        });
+    }
+    
+    function createId() {
+      if (window.crypto && window.crypto.randomUUID) {
+        return window.crypto.randomUUID();
+      }
+    
+      return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+    
+    function normalizeTeacher(teacher) {
+      return {
+        id: teacher.id || createId(),
+        name: teacher.name || "",
+        subject: teacher.subject || "",
+        username: teacher.username || "",
+        password: teacher.password || "",
+        passwordHash: teacher.passwordHash || ""
+      };
+    }
+    
+    function normalizeLecture(lecture) {
+      return {
+        ...lecture,
+        id: lecture.id || createId(),
+        teacherId: lecture.teacherId || "",
+        day: lecture.day || "",
+        startTime: lecture.startTime || lecture.time || "",
+        endTime: lecture.endTime || lecture.time || "",
+        subject: lecture.subject || "",
+        school: lecture.school || "",
+        grade: lecture.grade || ""
+      };
+    }
+    
+    function loadLocalState() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) {
+        return { teachers: [], lectures: [] };
+      }
+    
+      try {
+        const parsed = JSON.parse(saved);
+        return {
+          teachers: Array.isArray(parsed.teachers) ? parsed.teachers.map(normalizeTeacher) : [],
+          lectures: Array.isArray(parsed.lectures) ? parsed.lectures.map(normalizeLecture) : []
+        };
+      } catch {
+        return { teachers: [], lectures: [] };
+      }
+    }
+    
+    function saveLocalState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+    
+    const SESSION_KEY = "teacherTimetableSessionV1";
+    const ADMIN_USERNAME = "admin";
+    const ADMIN_PASSWORD_HASH = "9521c097456ee274881515f2536a109a4a6b95c83325a55f71c551edfdcb70c4";
+    
+    function loadSession() {
+      try {
+        return JSON.parse(localStorage.getItem(SESSION_KEY));
+      } catch {
+        return null;
+      }
+    }
+    
+    function saveSession(user) {
+      if (!user) {
+        localStorage.removeItem(SESSION_KEY);
+        return;
+      }
+    
+      localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    }
+    
+    async function loginUser({ username, password, teachers, onPasswordUpgrade }) {
+      const passwordHash = await hashPassword(password);
+    
+      if (username === ADMIN_USERNAME && passwordHash === ADMIN_PASSWORD_HASH) {
+        return { ok: true, user: { role: "admin" } };
+      }
+    
+      const teacher = teachers.find(
+        item => item.username === username && (item.passwordHash === passwordHash || item.password === password)
+      );
+    
+      if (!teacher) {
+        return { ok: false, message: "Invalid username or password." };
+      }
+    
+      if (!teacher.passwordHash) {
+        teacher.passwordHash = passwordHash;
+        delete teacher.password;
+        onPasswordUpgrade();
+      }
+    
+      return { ok: true, user: { role: "teacher", teacherId: teacher.id } };
+    }
+    
+    async function createTeacherAccount({ name, subject, username, password, teachers, createId }) {
+      if (!name || !subject || !username || !password) {
+        return { ok: false, message: "Please fill every teacher account field." };
+      }
+    
+      if (username === ADMIN_USERNAME || teachers.some(item => item.username === username)) {
+        return { ok: false, message: "This username is already used." };
+      }
+    
+      return {
+        ok: true,
+        teacher: {
+          id: createId(),
+          name,
+          subject,
+          username,
+          passwordHash: await hashPassword(password)
+        }
+      };
+    }
+    
+    async function migratePlainTeacherPasswords(teachers, onMigrated) {
+      const teachersWithPlainPasswords = teachers.filter(teacher => teacher.password && !teacher.passwordHash);
+      if (!teachersWithPlainPasswords.length) return;
+    
+      for (const teacher of teachersWithPlainPasswords) {
+        teacher.passwordHash = await hashPassword(teacher.password);
+        delete teacher.password;
+      }
+    
+      onMigrated();
+    }
+    
+    async function hashPassword(password) {
+      const bytes = new TextEncoder().encode(password);
+      const digest = await crypto.subtle.digest("SHA-256", bytes);
+      return [...new Uint8Array(digest)]
+        .map(byte => byte.toString(16).padStart(2, "0"))
+        .join("");
+    }
+    
+    const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    
+    let toastTimer = null;
+    let activeAdminTab = "teachersPanel";
+    
+    const dom = {
+      loginScreen: document.getElementById("loginScreen"),
+      adminScreen: document.getElementById("adminScreen"),
+      teacherScreen: document.getElementById("teacherScreen"),
+      appHeader: document.getElementById("appHeader"),
+      logoutBtn: document.getElementById("logoutBtn"),
+      pageTitle: document.getElementById("pageTitle"),
+      syncStatus: document.getElementById("syncStatus"),
+      toast: document.getElementById("toast"),
+      loginForm: document.getElementById("loginForm"),
+      teacherForm: document.getElementById("teacherForm"),
+      lectureForm: document.getElementById("lectureForm"),
+      lectureTeacher: document.getElementById("lectureTeacher"),
+      lectureSubject: document.getElementById("lectureSubject"),
+      lectureSearch: document.getElementById("lectureSearch"),
+      deleteAllBtn: document.getElementById("deleteAllBtn"),
+      adminStats: document.getElementById("adminStats"),
+      teacherList: document.getElementById("teacherList"),
+      adminTable: document.getElementById("adminTable"),
+      teacherWelcome: document.getElementById("teacherWelcome"),
+      teacherMeta: document.getElementById("teacherMeta"),
+      teacherTable: document.getElementById("teacherTable"),
+      confirmModal: document.getElementById("confirmModal"),
+      confirmTitle: document.getElementById("confirmTitle"),
+      confirmMessage: document.getElementById("confirmMessage"),
+      confirmYes: document.getElementById("confirmYes"),
+      confirmNo: document.getElementById("confirmNo")
+    };
+    
+    function setHtml(container, html) {
+      if (!container) return;
+      container.innerHTML = html;
+    }
+    
+    function setText(container, text) {
+      if (!container) return;
+      container.textContent = text;
+    }
+    
+    function setValue(container, value) {
+      if (!container) return;
+      container.value = value;
+    }
+    
+    function render(state, currentUser) {
+      renderAdminStats(state);
+      renderTeacherSelect(state);
+      renderTeacherList(state);
+      renderAdminLectures(state);
+      renderTeacherDashboard(state, currentUser);
+    }
+    
+    function showScreen(screenName) {
+      dom.loginScreen?.classList.toggle("active", screenName === "login");
+      dom.adminScreen?.classList.toggle("active", screenName === "admin");
+      dom.teacherScreen?.classList.toggle("active", screenName === "teacher");
+      if (dom.appHeader) dom.appHeader.style.display = screenName === "login" ? "none" : "flex";
+      if (dom.logoutBtn) dom.logoutBtn.style.display = screenName === "login" ? "none" : "inline-flex";
+    
+      if (screenName === "admin") {
+        setText(dom.pageTitle, "Admin Dashboard");
+      }
+    
+      if (screenName === "teacher") {
+        setText(dom.pageTitle, "Teacher Dashboard");
+      }
+    }
+    
+    function fillTeacherSubject(state) {
+      if (!dom.lectureTeacher || !dom.lectureSubject) return;
+      const teacher = state.teachers.find(item => item.id === dom.lectureTeacher.value);
+      setValue(dom.lectureSubject, teacher ? teacher.subject : "");
+    }
+    
+    function showToast(message, type = "") {
+      if (!dom.toast) return;
+      clearTimeout(toastTimer);
+      setText(dom.toast, message);
+      dom.toast.className = `toast show ${type}`;
+      toastTimer = setTimeout(() => {
+        dom.toast.className = "toast";
+      }, 2600);
+    }
+    
+    function updateSyncStatus(message) {
+      setText(dom.syncStatus, message);
+    }
+    
+    function openConfirm(title, message, action) {
+      setText(dom.confirmTitle, title);
+      setText(dom.confirmMessage, message);
+      dom.confirmModal?.classList.add("show");
+      if (!dom.confirmYes) return;
+      dom.confirmYes.onclick = () => {
+        closeConfirm();
+        action();
+      };
+    }
+    
+    function closeConfirm() {
+      dom.confirmModal?.classList.remove("show");
+      if (dom.confirmYes) dom.confirmYes.onclick = null;
+    }
+    
+    function getActiveAdminTab() {
+      return activeAdminTab;
+    }
+    
+    function wireAdminTabs(onTabChange = () => {}) {
+      document.querySelectorAll("[data-mobile-tab]").forEach(button => {
+        button.addEventListener("click", () => {
+          activeAdminTab = button.dataset.mobileTab;
+    
+          document.querySelectorAll("[data-mobile-tab]").forEach(tab => {
+            tab.classList.toggle("active", tab === button);
+          });
+    
+          document.querySelectorAll(".mobile-tab-section").forEach(section => {
+            section.classList.toggle("active", section.id === activeAdminTab);
+          });
+    
+          onTabChange(activeAdminTab);
+        });
+      });
+    }
+    
+    function sortedLectures(lectures) {
+      return [...lectures].sort((a, b) => {
+        const dayCompare = DAYS.indexOf(a.day) - DAYS.indexOf(b.day);
+        if (dayCompare !== 0) return dayCompare;
+        return (a.startTime || "").localeCompare(b.startTime || "");
+      });
+    }
+    
+    function renderAdminStats(state) {
+      const schools = new Set(state.lectures.map(lecture => lecture.school.trim()).filter(Boolean));
+    
+      setHtml(dom.adminStats, `
+        <div class="mini-stat">
+          <span>Teachers</span>
+          <strong>${state.teachers.length}</strong>
+        </div>
+        <div class="mini-stat">
+          <span>Lectures</span>
+          <strong>${state.lectures.length}</strong>
+        </div>
+        <div class="mini-stat">
+          <span>Schools</span>
+          <strong>${schools.size}</strong>
+        </div>
+      `);
+    }
+    
+    function renderTeacherSelect(state) {
+      if (!dom.lectureTeacher || !dom.lectureSubject) return;
+    
+      if (!state.teachers.length) {
+        setHtml(dom.lectureTeacher, `<option value="">No teachers added yet</option>`);
+        setValue(dom.lectureSubject, "");
+        return;
+      }
+    
+      const currentValue = dom.lectureTeacher.value;
+      setHtml(dom.lectureTeacher, state.teachers
+        .map(teacher => `<option value="${escapeHtml(teacher.id)}">${escapeHtml(teacher.name)}</option>`)
+        .join(""));
+    
+      if (currentValue && state.teachers.some(teacher => teacher.id === currentValue)) {
+        dom.lectureTeacher.value = currentValue;
+      }
+    
+      fillTeacherSubject(state);
+    }
+    
+    function renderTeacherList(state) {
+      if (!state.teachers.length) {
+        setHtml(dom.teacherList, `<div class="empty">No teacher accounts yet.</div>`);
+        return;
+      }
+    
+      setHtml(dom.teacherList, state.teachers.map(teacher => {
+        const lectureCount = state.lectures.filter(lecture => lecture.teacherId === teacher.id).length;
+        return `
+          <div class="item">
+            <div>
+              <strong>${escapeHtml(teacher.name)}</strong>
+              <span>${escapeHtml(teacher.subject)} - Username: ${escapeHtml(teacher.username)}</span>
+            </div>
+            <div class="item-actions">
+              <span class="pill">${lectureCount} classes</span>
+              <button class="btn danger small" data-delete-teacher="${escapeHtml(teacher.id)}">Delete Teacher</button>
+            </div>
+          </div>
+        `;
+      }).join(""));
+    }
+    
+    function renderAdminLectures(state) {
+      if (!dom.lectureSearch || !dom.adminTable) return;
+    
+      const query = dom.lectureSearch.value.trim().toLowerCase();
+      const lectures = filterLectures(state, state.lectures, query);
+    
+      if (!lectures.length) {
+        const empty = `<div class="empty">${query ? "No lectures match your search." : "No lectures added yet."}</div>`;
+        setHtml(dom.adminTable, empty);
+        return;
+      }
+    
+      setHtml(dom.adminTable, renderLectureTable(state, lectures, true));
+    }
+    
+    function renderTeacherDashboard(state, currentUser) {
+      if (!currentUser || currentUser.role !== "teacher") return;
+    
+      const teacher = state.teachers.find(item => item.id === currentUser.teacherId);
+      if (!teacher) {
+        setHtml(dom.teacherTable, `<div class="empty">Teacher account was not found.</div>`);
+        return;
+      }
+    
+      setText(dom.teacherWelcome, `${teacher.name}'s Timetable`);
+      setText(dom.teacherMeta, `Subject: ${teacher.subject}`);
+    
+      const lectures = sortedLectures(state.lectures.filter(item => item.teacherId === teacher.id));
+      if (!lectures.length) {
+        setHtml(dom.teacherTable, `<div class="empty">No lectures assigned yet.</div>`);
+        return;
+      }
+    
+      setHtml(dom.teacherTable, renderLectureTable(state, lectures, false));
+    }
+    
+    function filterLectures(state, lectures, query) {
+      return sortedLectures(lectures).filter(lecture => {
+        const teacher = state.teachers.find(item => item.id === lecture.teacherId);
+        const searchable = [
+          teacher ? teacher.name : "",
+          lecture.day,
+          lecture.startTime,
+          lecture.endTime,
+          lecture.subject,
+          lecture.school,
+          lecture.grade
+        ].join(" ").toLowerCase();
+    
+        return searchable.includes(query);
+      });
+    }
+    
+    function renderLectureTable(state, lectures, adminMode) {
+      return `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                ${adminMode ? "<th>Teacher</th>" : ""}
+                <th>Day</th>
+                <th>Time</th>
+                <th>Subject</th>
+                <th>School</th>
+                <th>Grade</th>
+                ${adminMode ? "<th>Action</th>" : ""}
+              </tr>
+            </thead>
+            <tbody>
+              ${lectures.map(lecture => {
+                const teacher = state.teachers.find(item => item.id === lecture.teacherId);
+                return `
+                  <tr>
+                    ${adminMode ? `<td><strong>${escapeHtml(teacher ? teacher.name : "Unknown")}</strong></td>` : ""}
+                    <td>${escapeHtml(lecture.day)}</td>
+                    <td>${formatTimeRange(lecture)}</td>
+                    <td><strong>${escapeHtml(lecture.subject)}</strong></td>
+                    <td>${escapeHtml(lecture.school)}</td>
+                    <td><span class="pill">${escapeHtml(lecture.grade)}</span></td>
+                    ${adminMode ? `<td><button class="btn danger small" data-delete-lecture="${escapeHtml(lecture.id)}">Delete</button></td>` : ""}
+                  </tr>
+                `;
+              }).join("")}
+            </tbody>
+          </table>
+        </div>
+        <div class="mobile-cards">
+          ${lectures.map(lecture => renderLectureCard(state, lecture, adminMode)).join("")}
+        </div>
+      `;
+    }
+    
+    function renderLectureCard(state, lecture, adminMode) {
+      const teacher = state.teachers.find(item => item.id === lecture.teacherId);
+    
+      return `
+        <article class="lecture-card">
+          <div class="lecture-card-head">
+            <div>
+              <strong>${escapeHtml(lecture.subject)}</strong>
+              <p class="subtle">${adminMode ? escapeHtml(teacher ? teacher.name : "Unknown teacher") : escapeHtml(lecture.day)}</p>
+            </div>
+            <span class="lecture-time">${formatTimeRange(lecture)}</span>
+          </div>
+          <div class="detail-grid">
+            <div class="detail"><span>Day</span><strong>${escapeHtml(lecture.day)}</strong></div>
+            <div class="detail"><span>School</span><strong>${escapeHtml(lecture.school)}</strong></div>
+            <div class="detail"><span>Grade</span><strong>${escapeHtml(lecture.grade)}</strong></div>
+            <div class="detail"><span>Teacher</span><strong>${escapeHtml(teacher ? teacher.name : "Unknown")}</strong></div>
+          </div>
+          ${adminMode ? `<button class="btn danger small" data-delete-lecture="${escapeHtml(lecture.id)}">Delete Lecture</button>` : ""}
+        </article>
+      `;
+    }
+    
+    function hasTimeConflict(lectures, teacherId, day, startTime, endTime, ignoredLectureId = "") {
+      return lectures.some(lecture =>
+        lecture.id !== ignoredLectureId &&
+        lecture.teacherId === teacherId &&
+        lecture.day === day &&
+        !(endTime <= lecture.startTime || startTime >= lecture.endTime)
+      );
+    }
+    
+    function formatTime(time) {
+      if (!time) return "";
+      const [hourValue, minute] = time.split(":");
+      let hour = Number(hourValue);
+      const suffix = hour >= 12 ? "PM" : "AM";
+      hour = hour % 12 || 12;
+      return `${hour}:${minute} ${suffix}`;
+    }
+    
+    function formatTimeRange(lecture) {
+      const start = formatTime(lecture.startTime || lecture.time);
+      const end = formatTime(lecture.endTime || lecture.time);
+      if (start && end && start !== end) return `${start} - ${end}`;
+      return start || end || "";
+    }
+    
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+    
+    let currentUser = loadSession();
+    
+    initCloud({
+      onCloudChange: () => {
+        restoreSession();
+        renderCurrentView();
+        migratePlainTeacherPasswords(state.teachers, () => {
+          saveState();
+          renderCurrentView();
+        });
+      },
+      onStatus: updateSyncStatus,
+      onToast: showToast
+    });
+    
+    wireEvents();
+    wireAdminTabs(() => renderCurrentView());
+    restoreSession();
+    renderCurrentView();
+    migratePlainTeacherPasswords(state.teachers, () => {
+      saveState();
+      renderCurrentView();
+    });
+    
+    function wireEvents() {
+      dom.loginForm?.addEventListener("submit", handleLogin);
+      dom.teacherForm?.addEventListener("submit", handleTeacherCreate);
+      dom.lectureForm?.addEventListener("submit", handleLectureCreate);
+      dom.lectureTeacher?.addEventListener("change", () => fillTeacherSubject(state));
+      dom.lectureSearch?.addEventListener("input", () => renderCurrentView());
+      dom.deleteAllBtn?.addEventListener("click", deleteAllTimetables);
+      dom.logoutBtn?.addEventListener("click", logout);
+      dom.confirmNo?.addEventListener("click", closeConfirm);
+    
+      document.addEventListener("click", event => {
+        const teacherButton = event.target.closest("[data-delete-teacher]");
+        if (teacherButton) {
+          deleteTeacher(teacherButton.dataset.deleteTeacher);
+          return;
+        }
+    
+        const lectureButton = event.target.closest("[data-delete-lecture]");
+        if (lectureButton) {
+          deleteLecture(lectureButton.dataset.deleteLecture);
+        }
+      });
+    }
+    
+    function renderCurrentView() {
+      render(state, currentUser);
+    }
+    
+    async function handleLogin(event) {
+      event.preventDefault();
+      const username = document.getElementById("loginUsername").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const notice = document.getElementById("loginNotice");
+      notice.style.color = "var(--red)";
+    
+      const result = await loginUser({
+        username,
+        password,
+        teachers: state.teachers,
+        onPasswordUpgrade: saveState
+      });
+    
+      if (!result.ok) {
+        notice.textContent = result.message;
+        return;
+      }
+    
+      currentUser = result.user;
+      saveSession(currentUser);
+      notice.textContent = "";
+      restoreSession();
+      renderCurrentView();
+      showToast("Logged in", "success");
+    }
+    
+    async function handleTeacherCreate(event) {
+      event.preventDefault();
+      const notice = document.getElementById("teacherNotice");
+      notice.style.color = "var(--red)";
+    
+      const result = await createTeacherAccount({
+        name: document.getElementById("teacherName").value.trim(),
+        subject: document.getElementById("teacherSubject").value.trim(),
+        username: document.getElementById("teacherUsername").value.trim(),
+        password: document.getElementById("teacherPassword").value,
+        teachers: state.teachers,
+        createId
+      });
+    
+      if (!result.ok) {
+        notice.textContent = result.message;
+        return;
+      }
+    
+      state.teachers.push(result.teacher);
+      saveState();
+      event.target.reset();
+      notice.style.color = "var(--green)";
+      notice.textContent = "Teacher account created.";
+      showToast("Teacher account created", "success");
+      renderCurrentView();
+    }
+    
+    function handleLectureCreate(event) {
+      event.preventDefault();
+      const teacherId = document.getElementById("lectureTeacher").value;
+      const day = document.getElementById("lectureDay").value;
+      const startTime = document.getElementById("lectureStartTime").value;
+      const endTime = document.getElementById("lectureEndTime").value;
+      const subject = document.getElementById("lectureSubject").value.trim();
+      const school = document.getElementById("lectureSchool").value.trim();
+      const grade = document.getElementById("lectureGrade").value.trim();
+      const notice = document.getElementById("lectureNotice");
+      notice.style.color = "var(--red)";
+    
+      if (!teacherId) {
+        notice.textContent = "Create a teacher first.";
+        return;
+      }
+    
+      if (endTime <= startTime) {
+        notice.textContent = "Ending time should be after starting time.";
+        return;
+      }
+    
+      if (hasTimeConflict(state.lectures, teacherId, day, startTime, endTime)) {
+        notice.textContent = "This teacher already has a lecture at that time.";
+        showToast("Time conflict found", "error");
+        return;
+      }
+    
+      state.lectures.push({
+        id: createId(),
+        teacherId,
+        day,
+        startTime,
+        endTime,
+        subject,
+        school,
+        grade
+      });
+    
+      saveState();
+      event.target.reset();
+      notice.style.color = "var(--green)";
+      notice.textContent = "Lecture added.";
+      showToast("Lecture added", "success");
+      renderCurrentView();
+    }
+    
+    function deleteAllTimetables() {
+      openConfirm("Delete Timetables", "All timetable entries will be deleted. Teacher accounts will stay saved.", () => {
+        state.lectures = [];
+        currentUser = { role: "admin" };
+        saveSession(currentUser);
+        saveState();
+        showToast("All timetables deleted", "success");
+        renderCurrentView();
+      });
+    }
+    
+    function deleteTeacher(teacherId) {
+      const teacher = state.teachers.find(item => item.id === teacherId);
+      if (!teacher) return;
+    
+      openConfirm("Delete Teacher", `${teacher.name} and their lectures will be deleted.`, () => {
+        state.teachers = state.teachers.filter(item => item.id !== teacherId);
+        state.lectures = state.lectures.filter(item => item.teacherId !== teacherId);
+    
+        if (currentUser?.teacherId === teacherId) {
+          currentUser = null;
+          saveSession(null);
+          showScreen("login");
+        }
+    
+        saveState();
+        showToast("Teacher deleted", "success");
+        renderCurrentView();
+      });
+    }
+    
+    function deleteLecture(lectureId) {
+      openConfirm("Delete Lecture", "This lecture will be removed from the timetable.", () => {
+        state.lectures = state.lectures.filter(item => item.id !== lectureId);
+        saveState();
+        showToast("Lecture deleted", "success");
+        renderCurrentView();
+      });
+    }
+    
+    function restoreSession() {
+      if (!currentUser) {
+        showScreen("login");
+        return;
+      }
+    
+      if (currentUser.role === "admin") {
+        showScreen("admin");
+        return;
+      }
+    
+      if (currentUser.role === "teacher" && state.teachers.some(teacher => teacher.id === currentUser.teacherId)) {
+        showScreen("teacher");
+        return;
+      }
+    
+      currentUser = null;
+      saveSession(null);
+      showScreen("login");
+    }
+    
+    function logout() {
+      currentUser = null;
+      saveSession(null);
+      dom.loginForm.reset();
+      showScreen("login");
+      renderCurrentView();
+    }
+  </script>
+</body>
+</html>
