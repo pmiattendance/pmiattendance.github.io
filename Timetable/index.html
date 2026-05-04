@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Timetable Manager</title>
+  <style>
+    :root {
+      --bg: #fff7ed;
+      --panel: #ffffff;
+      --ink: #172033;
+      --muted: #64748b;
+      --line: #dbe5f2;
+      --brand: #0ea5e9;
+      --brand-dark: #0369a1;
+      --accent: #f97316;
+      --violet: #7c3aed;
+      --green: #14b8a6;
+      --red: #ef4444;
+      --amber: #f59e0b;
+      --soft: #e0f2fe;
+      --shadow: 0 18px 44px rgba(15, 23, 42, 0.12);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(120deg, rgba(14, 165, 233, 0.18), transparent 34rem),
+        linear-gradient(280deg, rgba(249, 115, 22, 0.14), transparent 30rem),
+        linear-gradient(180deg, #f8fcff 0%, var(--bg) 100%);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      border-radius: var(--radius);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0;
+    }
+
+    .app-header {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(219, 229, 242, 0.92);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 30px rgba(22, 32, 51, 0.07);
+      backdrop-filter: blur(10px);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(1.35rem, 2.4vw, 2rem);
+      letter-spacing: 0;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 4px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .login-layout {
+      display: grid;
+      place-items: center;
+      min-height: calc(100vh - 56px);
+    }
+
+    .panel,
+    .login-card {
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(219, 229, 242, 0.92);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+    }
+
+    .login-card {
+      padding: 30px;
+      width: min(100%, 430px);
+      align-self: center;
+      border-top: 7px solid var(--accent);
+    }
+
+    .login-card h2 {
+      font-size: 1.8rem;
+      margin-bottom: 6px;
+    }
+
+    .login-head {
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: #344054;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      color: var(--ink);
+      background: #fbfdff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 18px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 10px 16px;
+      color: white;
+      background: linear-gradient(135deg, var(--brand), var(--violet));
+      font-weight: 800;
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, var(--brand-dark), #5b21b6);
+    }
+
+    .btn.secondary {
+      color: var(--ink);
+      background: #e0f2fe;
+      box-shadow: none;
+    }
+
+    .btn.danger {
+      background: var(--red);
+      box-shadow: none;
+    }
+
+    .btn.small {
+      min-height: 34px;
+      padding: 7px 10px;
+      font-size: 0.85rem;
+    }
+
+    .notice {
+      min-height: 22px;
+      margin-top: 12px;
+      color: var(--red);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 30;
+      display: none;
+      max-width: min(360px, calc(100% - 28px));
+      padding: 13px 15px;
+      color: white;
+      background: #162033;
+      border-radius: var(--radius);
+      box-shadow: 0 18px 40px rgba(22, 32, 51, 0.24);
+      font-weight: 800;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    .toast.success {
+      background: var(--green);
+    }
+
+    .toast.error {
+      background: var(--red);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(15, 23, 42, 0.42);
+    }
+
+    .modal-backdrop.show {
+      display: grid;
+    }
+
+    .modal {
+      width: min(100%, 420px);
+      padding: 20px;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+    }
+
+    .modal p {
+      color: var(--muted);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    .mobile-tabs {
+      position: sticky;
+      top: 0;
+      z-index: 9;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 16px;
+      padding: 7px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.09);
+      backdrop-filter: blur(10px);
+    }
+
+    .mobile-tab {
+      min-height: 42px;
+      padding: 9px 10px;
+      color: var(--muted);
+      background: #f8fbff;
+      border: 1px solid transparent;
+      box-shadow: none;
+      font-size: 0.88rem;
+      font-weight: 900;
+    }
+
+    .mobile-tab.active {
+      color: white;
+      background: linear-gradient(135deg, var(--brand), var(--violet));
+    }
+
+    .mobile-tab-section {
+      display: none;
+      min-width: 0;
+    }
+
+    .mobile-tab-section.active {
+      display: block;
+    }
+
+    .mobile-tab-section:not(.active) {
+      display: none !important;
+    }
+
+    .mobile-tab-section.active.stack {
+      display: grid;
+    }
+
+    .dashboard-grid {
+      display: block;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .mini-stat {
+      padding: 16px;
+      color: white;
+      background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 24px rgba(14, 165, 233, 0.18);
+    }
+
+    .mini-stat span {
+      display: block;
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 0.84rem;
+      margin-bottom: 6px;
+    }
+
+    .mini-stat strong {
+      font-size: 1.65rem;
+    }
+
+    .danger-zone {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      border-color: #fed7aa;
+      background: #fff7ed;
+      box-shadow: 0 10px 24px rgba(239, 68, 68, 0.08);
+    }
+
+    .panel-title,
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .toolbar {
+      align-items: end;
+      flex-wrap: wrap;
+    }
+
+    .toolbar .field {
+      min-width: min(100%, 280px);
+    }
+
+    .panel {
+      padding: 20px;
+    }
+
+    .panel h2 {
+      font-size: 1.22rem;
+    }
+
+    .panel h3 {
+      font-size: 1.05rem;
+    }
+
+    .stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .teacher-list,
+    .lecture-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 13px;
+      background: linear-gradient(180deg, #ffffff, #f8fbff);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .item strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .item span {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      color: #075985;
+      background: #ccfbf1;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .mobile-cards {
+      display: none;
+    }
+
+    .lecture-card {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 20px rgba(22, 32, 51, 0.06);
+    }
+
+    .lecture-card + .lecture-card {
+      margin-top: 10px;
+    }
+
+    .lecture-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .lecture-card-head strong {
+      display: block;
+      font-size: 1rem;
+    }
+
+    .lecture-time {
+      color: var(--brand-dark);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .detail {
+      padding: 10px;
+      background: #f8fbff;
+      border: 1px solid #e8eef8;
+      border-radius: var(--radius);
+    }
+
+    .detail span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .detail strong {
+      overflow-wrap: anywhere;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+      background: white;
+    }
+
+    th,
+    td {
+      padding: 13px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #344054;
+      background: #ecfeff;
+      font-size: 0.84rem;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .empty {
+      padding: 22px;
+      color: var(--muted);
+      text-align: center;
+      background: #f8fbff;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+    }
+
+    .teacher-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .login-layout,
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 620px) {
+      .shell {
+        width: min(100% - 14px, 1180px);
+        padding: 10px 0 18px;
+      }
+
+      .app-header,
+      .teacher-header,
+      .danger-zone {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .app-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        margin-bottom: 12px;
+      }
+
+      .app-header .btn,
+      .actions .btn,
+      .danger-zone .btn {
+        width: 100%;
+      }
+
+      .toast {
+        right: 7px;
+        bottom: 12px;
+      }
+
+      h1 {
+        font-size: 1.35rem;
+      }
+
+      .subtle {
+        font-size: 0.88rem;
+      }
+
+      .quick-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .mobile-tabs {
+        top: 86px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        padding: 6px;
+      }
+
+      .mobile-tab {
+        min-height: 38px;
+        padding: 8px 7px;
+        font-size: 0.82rem;
+      }
+
+      .mini-stat {
+        padding: 12px 10px;
+      }
+
+      .mini-stat strong {
+        font-size: 1.35rem;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .login-card,
+      .panel {
+        padding: 16px;
+      }
+
+      input,
+      select {
+        min-height: 48px;
+      }
+
+      .toolbar,
+      .panel-title,
+      .item,
+      .item-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .toolbar .field {
+        width: 100%;
+      }
+
+      .table-wrap {
+        display: none;
+      }
+
+      .mobile-cards {
+        display: block;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="app-header" id="appHeader">
+      <div>
+        <h1 id="pageTitle">Dashboard</h1>
+        <p class="status" id="syncStatus"></p>
+      </div>
+      <button class="btn secondary" id="logoutBtn" style="display: none;">Logout</button>
+    </header>
+
+    <section id="loginScreen" class="screen active">
+      <div class="login-layout">
+        <form class="login-card" id="loginForm">
+          <div class="login-head">
+            <h2>Teacher Timetable</h2>
+          </div>
+          <div class="field">
+            <label for="loginUsername">Username</label>
+            <input id="loginUsername" autocomplete="username" required />
+          </div>
+          <div class="field" style="margin-top: 14px;">
+            <label for="loginPassword">Password</label>
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+          </div>
+          <div class="actions">
+            <button class="btn" type="submit">Login</button>
+          </div>
+          <div class="notice" id="loginNotice"></div>
+        </form>
+      </div>
+    </section>
+
+    <section id="adminScreen" class="screen">
+      <div class="quick-grid" id="adminStats" style="margin-bottom: 18px;"></div>
+      <nav class="mobile-tabs" aria-label="Admin sections">
+        <button class="mobile-tab active" type="button" data-mobile-tab="teachersPanel">Teachers</button>
+        <button class="mobile-tab" type="button" data-mobile-tab="lecturePanel">Add</button>
+        <button class="mobile-tab" type="button" data-mobile-tab="lecturesPanel">Lectures</button>
+        <button class="mobile-tab" type="button" data-mobile-tab="controlsPanel">Clear</button>
+      </nav>
+      <div class="panel danger-zone mobile-tab-section" id="controlsPanel">
+        <div>
+          <h2>Timetable Controls</h2>
+        </div>
+        <button class="btn danger" id="deleteAllBtn" type="button">Delete All Timetables</button>
+      </div>
+      <div class="dashboard-grid">
+        <aside class="stack mobile-tab-section active" id="teachersPanel">
+          <form class="panel" id="teacherForm">
+            <div class="panel-title">
+              <div>
+                <h2>Add Teacher</h2>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="field full">
+                <label for="teacherName">Teacher Name</label>
+                <input id="teacherName" required />
+              </div>
+              <div class="field full">
+                <label for="teacherSubject">Teacher Subject</label>
+                <input id="teacherSubject" required />
+              </div>
+              <div class="field">
+                <label for="teacherUsername">Username</label>
+                <input id="teacherUsername" required />
+              </div>
+              <div class="field">
+                <label for="teacherPassword">Password</label>
+                <input id="teacherPassword" type="password" required />
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn" type="submit">Create Account</button>
+            </div>
+            <div class="notice" id="teacherNotice"></div>
+          </form>
+
+          <div class="panel">
+            <div class="panel-title">
+              <h3>Teachers</h3>
+            </div>
+            <div id="teacherList" class="teacher-list"></div>
+          </div>
+        </aside>
+
+        <section class="stack mobile-tab-section" id="lecturePanel">
+          <form class="panel" id="lectureForm">
+            <div class="panel-title">
+              <div>
+                <h2>Add Lecture</h2>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="lectureTeacher">Teacher</label>
+                <select id="lectureTeacher" required></select>
+              </div>
+              <div class="field">
+                <label for="lectureDay">Day</label>
+                <select id="lectureDay" required>
+                  <option>Monday</option>
+                  <option>Tuesday</option>
+                  <option>Wednesday</option>
+                  <option>Thursday</option>
+                  <option>Friday</option>
+                  <option>Saturday</option>
+                  <option>Sunday</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="lectureStartTime">Starting Time</label>
+                <input id="lectureStartTime" type="time" required />
+              </div>
+              <div class="field">
+                <label for="lectureEndTime">Ending Time</label>
+                <input id="lectureEndTime" type="time" required />
+              </div>
+              <div class="field">
+                <label for="lectureSubject">Subject</label>
+                <input id="lectureSubject" readonly required />
+              </div>
+              <div class="field">
+                <label for="lectureSchool">School</label>
+                <input id="lectureSchool" required />
+              </div>
+              <div class="field">
+                <label for="lectureGrade">Grade</label>
+                <input id="lectureGrade" required />
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn" type="submit">Add Lecture</button>
+            </div>
+            <div class="notice" id="lectureNotice"></div>
+          </form>
+        </section>
+
+        <section class="stack mobile-tab-section" id="lecturesPanel">
+          <div class="panel">
+            <div class="toolbar">
+              <div>
+                <h2>Lectures</h2>
+              </div>
+              <div class="field">
+                <label for="lectureSearch">Search</label>
+                <input id="lectureSearch" />
+              </div>
+            </div>
+            <div id="adminTable"></div>
+          </div>
+        </section>
+
+      </div>
+    </section>
+
+    <section id="teacherScreen" class="screen">
+      <div class="teacher-header">
+        <div>
+          <h2 id="teacherWelcome">My Timetable</h2>
+          <p class="subtle" id="teacherMeta"></p>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">
+          <div>
+            <h2>Assigned Lectures</h2>
+          </div>
+        </div>
+        <div id="teacherTable"></div>
+      </div>
+    </section>
+  </main>
+  <div class="toast" id="toast"></div>
+  <div class="modal-backdrop" id="confirmModal">
+    <div class="modal">
+      <h2 id="confirmTitle">Confirm</h2>
+      <p id="confirmMessage"></p>
+      <div class="actions">
+        <button class="btn danger" id="confirmYes" type="button">Delete</button>
+        <button class="btn secondary" id="confirmNo" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./app.js?v=20260504-working-tabs"></script>
+  
+</body>
+</html>
